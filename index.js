@@ -5,7 +5,7 @@ const vendorRoutes=require('./routes/vendorRoutes');
 const bodyParser=require('body-parser');
 
 const app = express();
-const PORT = 4000;
+const PORT =  process.env.PORT || 4000;
 
 dotenv.config();  // Load environment variables from .env
 // Log the MONGO_URL to verify it is being loaded
