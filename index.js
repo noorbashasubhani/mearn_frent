@@ -25,8 +25,9 @@ app.use('/vendor',vendorRoutes);
 
 // Define routes
 app.get('/', (req, res) => {
-    res.send('<h1> Welcome to Gogaga Holidays ! Project is Under Constructions!</h1>');
+    res.send('<h1> Welcome to Gogaga Holidays ! Project is Under Constructions! Gogaga sel</h1>');
 });
+
 
 // Start the server
 app.listen(PORT, () => {
