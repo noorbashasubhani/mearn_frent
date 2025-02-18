@@ -4,7 +4,9 @@ const designationController=require('../controllers/designationController');
 const cabController=require('../controllers/cabController');
 const airportController = require('../controllers/airportController');
 const holidayss = require('../controllers/holidayController');
-
+const Hotels = require('../controllers/hotelController');
+const Banks = require('../controllers/BankController');
+const Users = require('../controllers/userController');
 
 const express = require('express');
 const router=express.Router();
@@ -24,5 +26,13 @@ router.post("/Add-Holidays",holidayss.AddHolidays);
 router.get("/HolidayList",holidayss.GetHolidays);
 router.delete("/DeleteHoliday/:id",holidayss.DeleteHoliday);
 router.put("/UpdateHoliday/:id",holidayss.UpdateHoliday);
-
+router.post("/Add-hotel",Hotels.AddHotel);
+router.get("/Gethotels",Hotels.HotelList);
+router.delete("/Delete-Hotel/:id",Hotels.DeletHotel);
+router.put("/Update-Hotels/:id",Hotels.updateHotels);
+router.put("/Update-Bank/:id",Banks.updateBank);
+router.get("/Bank-List",Banks.getBank);
+router.get("/Bank-Single/:id",Banks.getBankSingle);
+router.post("/Add-User",Users.AddUser);
+router.post("/Check-user",Users.userChecking);
 module.exports = router;
