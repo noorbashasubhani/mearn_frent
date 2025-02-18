@@ -70,3 +70,41 @@ exports.getDesignations = async (req, res) => {
     });
   }
 };
+
+
+exports.getGroupDesignations = async (req, res) => {
+  try {
+    // Fetch all designations and populate the 'department' field with the department's name
+    const designations = await Designation.find()
+      .populate("department", "name") // Populates the 'department' field with only the 'name'
+      .exec();
+
+    // Group by department
+    const groupedDesignations = designations.reduce((acc, designation) => {
+      // Extract department name
+      const departmentName = designation.department.name;
+
+      // If the department doesn't exist in the accumulator, create an array for it
+      if (!acc[departmentName]) {
+        acc[departmentName] = [];
+      }
+
+      // Add the designation to the corresponding department
+      acc[departmentName].push({
+        _id: designation._id,
+        name: designation.name,
+      });
+
+      return acc;
+    }, {});
+
+    // Send the grouped designations as a response
+    res.status(200).json(groupedDesignations);
+
+  } catch (error) {
+    res.status(500).json({
+      message: "Something went wrong while fetching the designations",
+      error: error.message,
+    });
+  }
+};
