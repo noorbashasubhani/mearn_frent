@@ -33,6 +33,7 @@ router.put("/Update-Hotels/:id",Hotels.updateHotels);
 router.put("/Update-Bank/:id",Banks.updateBank);
 router.get("/Bank-List",Banks.getBank);
 router.get("/Bank-Single/:id",Banks.getBankSingle);
-router.post("/Add-User",Users.AddUser);
+router.post("/Add-User",Users.addUser);
 router.post("/Check-user",Users.userChecking);
+router.post("/User-Login",Users.userLogin);
 module.exports = router;
