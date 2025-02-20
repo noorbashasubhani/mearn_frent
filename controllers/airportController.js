@@ -47,7 +47,6 @@ exports.createAirport = async (req, res) => {
 };
 
 
-exports.Airport = require('../models/Airport');  // Correct import path
 
 exports.Airportlist = async (req, res) => {
   try {
@@ -59,10 +58,6 @@ exports.Airportlist = async (req, res) => {
   } catch (error) {
     console.error("Error fetching airports:", error);
 
-    // Return a 500 status with error message
-    res.status(500).json({
-      message: "Error fetching airports",
-      error: error.message,
-    });
+    
   }
 };
