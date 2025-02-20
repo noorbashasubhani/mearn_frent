@@ -48,7 +48,7 @@ exports.createAirport = async (req, res) => {
 
 
 
-exports.Airportlist = async (req, res) => {
+exports.Airpordet = async (req, res) => {
   try {
     // Fetch all airports from the database
     const airportList = await Airport.find();

@@ -21,7 +21,7 @@ router.get("/GroupDesinations",designationController.getGroupDesignations);
 router.post("/add-cab",cabController.addCab);
 router.get("/Cab-list",cabController.cabDatails);
 router.post("/Add-Airports",airportController.createAirport);
-router.get("/Airplan-List",airportController.Airportlist);
+router.get("/Airplan-List",airportController.Airpordet);
 router.post("/Add-Holidays",holidayss.AddHolidays);
 router.get("/HolidayList",holidayss.GetHolidays);
 router.delete("/DeleteHoliday/:id",holidayss.DeleteHoliday);
