@@ -46,8 +46,7 @@ exports.addUser = async (req, res) => {
       // Save the new user to the database
       await newUser.save();
 
-      res.status(200).json({ message: "User Added Successfully" });
-
+      res.status(200).json({ message: "User Deails Added Successfully" }); 
   } catch (error) {
       console.error(error); // It's always a good idea to log the error for debugging
       res.status(400).json({ message: "Something went wrong" });
@@ -64,17 +63,24 @@ exports.userLogin = async (req, res) => {
 
       // Check if the user exists
       if (!user) {
-          return res.status(400).json({ message: "Invalid email or password" });
+          return res.status(400).json({ message: "Invalid email " });
       }
 
       // Compare provided password with stored hashed password
       const passwordMatch = await bcrypt.compare(password, user.password);
       if (!passwordMatch) {
-          return res.status(400).json({ message: "Invalid email or password" });
+          return res.status(400).json({ message: "Invalid  password" });
       }
 
+      const token = jwt.sign(
+        { userId: user._id, email: user.email },
+        process.env.JWT_SECRET_KEY, // Secret key from environment variables
+        { expiresIn: '1h' } // Token expiration time (e.g., 1 hour)
+      );
+
+
       // Login successful - send success message
-      res.status(200).json({ message: "User Login successful" });
+      res.status(200).json({ message: "User Login successful",token: token });
 
   } catch (error) {
       console.error("Login error:", error); // Log error for debugging purposes
