@@ -58,6 +58,5 @@ exports.Airpordet = async (req, res) => {
   } catch (error) {
     console.error("Error fetching airports:", error);
 
-    
   }
 };

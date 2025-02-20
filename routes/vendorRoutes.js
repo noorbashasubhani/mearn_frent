@@ -36,4 +36,5 @@ router.get("/Bank-Single/:id",Banks.getBankSingle);
 router.post("/Add-User",Users.addUser);
 router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
+router.get("/Userlist",Users.userList);
 module.exports = router;

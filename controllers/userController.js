@@ -87,3 +87,22 @@ exports.userLogin = async (req, res) => {
       res.status(400).json({ message: "Something went wrong" });
   }
 };
+
+exports.userList = async (req, res) => {
+  try {
+    // Fetch all users from the database
+    const list = await User.find();
+
+    // Return a success response with the user list
+    res.status(200).json(list);
+  } catch (error) {
+    // Log the error for debugging purposes
+    console.error("Error fetching users: ", error);
+
+    // Send a detailed error response
+    res.status(500).json({
+      message: "Unable to fetch data",
+      error: error.message, // Include error message for debugging
+    });
+  }
+};
