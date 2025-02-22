@@ -47,3 +47,21 @@ exports.getAllLibdata = async (req, res) => {
     res.status(500).json({ message: 'Error retrieving libdata', error: error.message });
   }
 };
+
+
+exports.delLib = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Corrected the delete query by only using the _id field.
+    const del = await Libdata.deleteOne({ _id: id });
+
+    if (del.deletedCount === 0) {
+      return res.status(404).json({ message: "Library  not found." });
+    }
+
+    res.status(200).json({ message: "Library Deleted Successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong..." });
+  }
+};

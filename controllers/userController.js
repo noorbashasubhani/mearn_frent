@@ -106,3 +106,23 @@ exports.userList = async (req, res) => {
     });
   }
 };
+
+
+exports.getUserId = async (req, res) => {
+    const { user_id } = req.params; // Get user_id from request parameters
+    try {
+        // Find a single user by _id
+        const singleUser = await User.findOne({ _id: user_id });
+        // If the user is not found, send a 404 error with a message
+        if (!singleUser) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        // If user is found, return the user details in the response
+        res.status(200).json(singleUser);
+    } catch (error) {
+        // If there was an error during the database operation, send a 500 error
+        console.error('Error fetching user:', error);
+        res.status(500).json({ message: 'Something went wrong' });
+    }
+};
+

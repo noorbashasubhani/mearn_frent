@@ -62,7 +62,7 @@ exports.addFlyer = (req, res) => {
             await newFlyer.save();
 
             res.status(201).json({
-                message: "Flyer added successfully",
+                message: "Flyer added successfully",data:newFlyer
             });
         } catch (error) {
             console.error("Error adding flyer:", error);
@@ -96,3 +96,21 @@ exports.getFlyers = async (req, res) => {
     }
 };
 
+
+exports.delFlyer = async (req, res) => {
+    const { id } = req.params;
+    try {
+      // Corrected the delete query by only using the _id field.
+      const del = await Flyer.deleteOne({ _id: id });
+  
+      if (del.deletedCount === 0) {
+        return res.status(404).json({ message: "Flyer not found." });
+      }
+  
+      res.status(200).json({ message: "Flyer Deleted Successfully." });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: "Something went wrong..." });
+    }
+  };
+  

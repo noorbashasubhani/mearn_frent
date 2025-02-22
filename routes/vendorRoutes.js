@@ -20,6 +20,8 @@ router.get("/Desg",designationController.getDesignations);
 router.get("/GroupDesinations",designationController.getGroupDesignations);
 router.post("/add-cab",cabController.addCab);
 router.get("/Cab-list",cabController.cabDatails);
+router.delete("/DeleteCab/:id",cabController.delCab);
+
 router.post("/Add-Airports",airportController.createAirport);
 router.get("/Airplan-List",airportController.Airpordet);
 router.post("/Add-Holidays",holidayss.AddHolidays);
@@ -37,4 +39,5 @@ router.post("/Add-User",Users.addUser);
 router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
+
 module.exports = router;

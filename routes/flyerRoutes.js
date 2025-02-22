@@ -6,5 +6,6 @@ const flyerController = require("../controllers/flyerController");
 
 router.post("/addFly", flyerController.addFlyer);
 router.get("/Flyer-list",flyerController.getFlyers);
+router.delete("/DeleteFlyer/:id",flyerController.delFlyer);
 
 module.exports = router;

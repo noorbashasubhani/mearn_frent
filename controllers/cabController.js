@@ -49,7 +49,7 @@ exports.addCab = async (req, res) => {
 
     res.status(201).json({
       message: "Cab added successfully",
-      cab: newCab,
+      data: newCab,
     });
   } catch (error) {
     console.error("Error adding cab:", error);
@@ -69,3 +69,19 @@ exports.cabDatails= async (req,res)=>{
      res.status().json({message:"Something went Wrong..!",error:error})
     }
 }
+
+
+exports.delCab = async (req, res) => {
+  const { id } = req.params;
+  try {
+    // Corrected the delete query by only using the _id field.
+    const del = await Cab.deleteOne({ _id: id });
+    if (del.deletedCount === 0) {
+      return res.status(404).json({ message: "cab  not found." });
+    }
+    res.status(200).json({ message: "cab Deleted Successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong..." });
+  }
+};

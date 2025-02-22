@@ -35,7 +35,7 @@ exports.createAirport = async (req, res) => {
     // Return the success response along with the newly created airport data
     res.status(201).json({
       message: "Airport added successfully",
-      airport: newAirport,  // Send back the created airport object
+      data: newAirport,  // Send back the created airport object
     });
   } catch (error) {
     console.error("Error adding airport:", error);
