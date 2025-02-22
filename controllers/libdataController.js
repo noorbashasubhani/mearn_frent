@@ -1,4 +1,4 @@
-const Libdata = require('../models/libdata');
+const Libdata = require('../models/Libdata');
 
 exports.createLibdata = async (req, res) => {
   const { name } = req.body;
