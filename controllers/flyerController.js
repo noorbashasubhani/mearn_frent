@@ -32,8 +32,7 @@ const upload = multer({
 // Controller for adding flyer
 exports.addFlyer = (req, res) => {
     // Log the request body to check what data is being sent
-    console.log(req.body); // Add this line to see the form data
-
+    //console.log(req.body); // Add this line to see the form data
     upload.single("img")(req, res, async (err) => {
         if (err) {
             return res.status(400).json({
