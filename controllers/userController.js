@@ -80,7 +80,7 @@ exports.userLogin = async (req, res) => {
 
 
       // Login successful - send success message
-      res.status(200).json({ message: "User Login successful",token: token });
+      res.status(200).json({ message: "User Login successful",token: user });
 
   } catch (error) {
       console.error("Login error:", error); // Log error for debugging purposes
@@ -124,5 +124,45 @@ exports.getUserId = async (req, res) => {
         console.error('Error fetching user:', error);
         res.status(500).json({ message: 'Something went wrong' });
     }
+};
+
+
+exports.changePassword = async (req, res) => {
+  const { id } = req.params; // Get user id from URL parameters
+  const { old_password, new_password } = req.body;
+  try {
+    // Find the user by user_id
+    const user = await User.findOne({ _id: id });
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Compare the old password with the stored password
+    const isMatch = await bcrypt.compare(old_password, user.password);
+    
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Incorrect old password' });
+    }
+
+    // Optional: You can validate the new password (e.g., check length or complexity) here
+    if (new_password.length < 6) {
+      return res.status(400).json({ message: 'New password must be at least 6 characters long' });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcrypt.hash(new_password, 10); // 10 is the salt rounds
+
+    // Save the new hashed password to the user's record
+    user.password = hashedPassword;
+    await user.save();
+
+    // Send success response
+    return res.status(200).json({ message: 'Password successfully changed' });
+    
+  } catch (error) {
+    console.error('Error changing password:', error);
+    return res.status(500).json({ message: 'Something went wrong' });
+  }
 };
 

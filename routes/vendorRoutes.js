@@ -39,5 +39,6 @@ router.post("/Add-User",Users.addUser);
 router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
+router.put("/Change-Password/:id",Users.changePassword);
 
 module.exports = router;
