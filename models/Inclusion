@@ -1,0 +1,29 @@
+const mongoose = require("mongoose");
+const inclusionSchema = mongoose.Schema({
+   inc_type:{
+    type:String,
+    required:true
+   },
+   travel_type:{
+    type:String,
+    required:true
+   },
+   standed_type:{
+    type:String,
+    required:true
+   },
+   name:{
+    type:String,
+    required:true
+   },
+   added_by:{
+      type:String,
+   },
+   created_date:{
+      type:Date,
+      default:Date.now()
+   }
+});
+
+const  Inclusion = mongoose.model("Inclusion",inclusionSchema);
+module.exports=Inclusion;
