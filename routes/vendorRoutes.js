@@ -18,9 +18,9 @@ const Otherexc = require("../controllers/otherexcController");
 const Investment = require("../controllers/investmentController");
 const Taxes = require("../controllers/taxesController");
 const Registration = require("../controllers/empregistrationController");
-
-
-
+const Rip = require("../controllers/ripController");
+const advance = require("../controllers/advancesalaryController");
+const Position=require("../controllers/positionController");
 
 
 
@@ -132,5 +132,19 @@ router.put("/Taxe/:row_id",Taxes.updateTax);
 //  emp registration //
 router.post("/Registration",Registration.empRegistration);
 router.get("/Employee-Details/:user_id",Registration.getUserWithReference);
+router.get("/Employelist",Registration.empDetails);
 
+// Rip Details
+router.post("/RIP/:user_id",Rip.AddRip);
+router.get("/RIP",Rip.getDetaRip);
+
+// advance salary
+router.post("/Advancesalary/:user_id",advance.addSalary);
+router.get("/Advancesalary",advance.getSalarydetails);
+
+
+// Position Details
+router.post("/Positions/:user_id",Position.addJobPosting);
+router.get("/Positions",Position.GetAllJobs);
+router.get("/Positions/:row_id",Position.GetSingleJobs);
 module.exports = router;

@@ -134,3 +134,13 @@ exports.getUserWithReference = async (req, res) => {
     res.status(500).json({ message: "Error fetching user details", error });
   }
 };
+
+
+exports.empDetails = async(req,res)=>{
+    try{
+        const list=await Users.find();
+    res.status(200).json({message:"success",data:list});
+    }catch(error){
+    res.status(500).json({message:"failed"});
+    }
+}
