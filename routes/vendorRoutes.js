@@ -17,6 +17,7 @@ const Officexc = require("../controllers/officeexController");
 const Otherexc = require("../controllers/otherexcController");
 const Investment = require("../controllers/investmentController");
 const Taxes = require("../controllers/taxesController");
+const Registration = require("../controllers/empregistrationController");
 
 
 
@@ -127,5 +128,9 @@ router.get("/Taxe/:row_id",Taxes.getSingleTax);
 router.delete("/Taxe/:row_id",Taxes.deleteTax);
 router.put("/Taxe/:row_id",Taxes.updateTax);
 
+
+//  emp registration //
+router.post("/Registration",Registration.empRegistration);
+router.get("/Employee-Details/:user_id",Registration.getUserWithReference);
 
 module.exports = router;
