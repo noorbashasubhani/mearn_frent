@@ -21,6 +21,7 @@ const Registration = require("../controllers/empregistrationController");
 const Rip = require("../controllers/ripController");
 const advance = require("../controllers/advancesalaryController");
 const Position=require("../controllers/positionController");
+const Notification = require("../controllers/notificationController");
 
 
 
@@ -147,4 +148,11 @@ router.get("/Advancesalary",advance.getSalarydetails);
 router.post("/Positions/:user_id",Position.addJobPosting);
 router.get("/Positions",Position.GetAllJobs);
 router.get("/Positions/:row_id",Position.GetSingleJobs);
+
+// Notification details
+
+router.post("/Notifications",Notification.AddNotification);
+router.get("/Notifications",Notification.NotificationList);
+router.get("/Notifications/:row_id",Notification.getSinleNotification);
+
 module.exports = router;
