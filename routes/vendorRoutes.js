@@ -22,8 +22,10 @@ const Rip = require("../controllers/ripController");
 const advance = require("../controllers/advancesalaryController");
 const Position=require("../controllers/positionController");
 const Notification = require("../controllers/notificationController");
-
 const Dcreditnote = require("../controllers/dcreditnoteController"); 
+const Team=require("../controllers/teamController");
+const Recovery=require("../controllers/recoveryController");
+const Asset = require("../controllers/assetController");
 
 const authenticateToken = require("../middlewares/authenticateToken");
 
@@ -161,7 +163,27 @@ router.get("/Positions/:row_id",Position.GetSingleJobs);
 router.post("/Notifications",Notification.AddNotification);
 router.get("/Notifications",Notification.NotificationList);
 router.get("/Notifications/:row_id",Notification.getSinleNotification);
-router.post("/Credit-Domestic-Note",authenticateToken,Dcreditnote.AddDomesticCredit);
 
+
+
+// Domestic Credit notes details
+router.post("/Credit-Domestic-Note",authenticateToken,Dcreditnote.AddDomesticCredit);
+router.get("/Credit-Domestic-Note",authenticateToken,Dcreditnote.getDomesticCredits);
+
+// Teams details
+router.post("/Teams",authenticateToken,Team.addTeam);
+router.get("/Teams",authenticateToken,Team.getTeams);
+router.delete("/Teams/:row_id",authenticateToken,Team.DelTeam);
+
+
+// Recovery Details
+
+router.post("/Recovery",authenticateToken,Recovery.addRecovery);
+router.get("/Recovery",authenticateToken,Recovery.getRecovery);
+router.put("/Recovery/:row_id",authenticateToken,Recovery.updateRecovery);
+
+// Assets Details 
+router.post("/Assets",authenticateToken,Asset.addAssets);
+router.get("/Assets",authenticateToken,Asset.getAssets);
 
 module.exports = router;

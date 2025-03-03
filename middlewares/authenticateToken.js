@@ -5,6 +5,8 @@ const authenticateToken = (req, res, next) => {
   //console.log("Authorization Header:", req.headers['authorization']);
 
   const token = req.headers['authorization']?.replace("Bearer ", "");
+  //console.log("Extracted Token:", token);  // Log the token for debugging
+
 
   if (!token) {
     return res.status(401).json({ message: "No token provided!" });
@@ -13,7 +15,7 @@ const authenticateToken = (req, res, next) => {
   //console.log("Extracted Token:", token);
   jwt.verify(token, process.env.JWT_SECRET_KEY, (err, decoded) => {
     if (err) {
-      //console.log("Token verification failed:", err); // Log the error details for debugging
+      console.log("Token verification failed:", err); // Log the error details for debugging
       return res.status(403).json({ message: "Invalid or expired token!" });
     }
     // Log the decoded token (payload)
