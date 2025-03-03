@@ -75,12 +75,12 @@ exports.userLogin = async (req, res) => {
       const token = jwt.sign(
         { userId: user._id, email: user.email },
         process.env.JWT_SECRET_KEY, // Secret key from environment variables
-        { expiresIn: '1h' } // Token expiration time (e.g., 1 hour)
+        { expiresIn: '5s' } // Token expiration time (e.g., 1 hour)
       );
 
 
       // Login successful - send success message
-      res.status(200).json({ message: "User Login successful",token: user });
+      res.status(200).json({ message: "User Login successful",token: token });
 
   } catch (error) {
       console.error("Login error:", error); // Log error for debugging purposes
@@ -166,3 +166,16 @@ exports.changePassword = async (req, res) => {
   }
 };
 
+
+exports.Test=async(req,res)=>{
+  try{
+    const list = await User.find({
+      first_name: "Noorbasha",
+      last_name: "subhani",
+      status: { $ne: "P" }
+    });
+    res.status(200).json({message:"success",data:list});
+  }catch(error){
+    res.status(500).json({message:"eroor",error});
+  }
+}

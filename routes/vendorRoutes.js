@@ -23,6 +23,12 @@ const advance = require("../controllers/advancesalaryController");
 const Position=require("../controllers/positionController");
 const Notification = require("../controllers/notificationController");
 
+const Dcreditnote = require("../controllers/dcreditnoteController"); 
+
+const authenticateToken = require("../middlewares/authenticateToken");
+
+
+
 
 
 const express = require('express');
@@ -56,6 +62,7 @@ router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
 router.put("/Change-Password/:id",Users.changePassword);
+router.get("/test",Users.Test);
 router.post("/complaints/:user_id",Complaints.addComplaints);
 router.get("/complaints/",Complaints.allComplaints);
 router.delete("/complaints/:row_id",Complaints.delete);
@@ -154,5 +161,7 @@ router.get("/Positions/:row_id",Position.GetSingleJobs);
 router.post("/Notifications",Notification.AddNotification);
 router.get("/Notifications",Notification.NotificationList);
 router.get("/Notifications/:row_id",Notification.getSinleNotification);
+router.post("/Credit-Domestic-Note",authenticateToken,Dcreditnote.AddDomesticCredit);
+
 
 module.exports = router;
