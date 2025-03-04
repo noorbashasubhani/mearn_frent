@@ -38,35 +38,58 @@ const router=express.Router();
 
 router.post('/register',vendorController.vendorRegister);
 //router.post('/User-Login',vendorController.vendorLogin);
+
+// Department details
 router.post("/Add-Dept", deparmentController.addDepartment);
 router.get("/Dept",deparmentController.getDepartments);
 router.post("/Add-Designations",designationController.addDesignation);
 router.get("/Desg",designationController.getDesignations);
+
+// Designation detaisl
 router.get("/GroupDesinations",designationController.getGroupDesignations);
+
+
+//cab details
 router.post("/add-cab",cabController.addCab);
 router.get("/Cab-list",cabController.cabDatails);
 router.delete("/DeleteCab/:id",cabController.delCab);
+
+// Airport Details
+
 router.post("/Add-Airports",airportController.createAirport);
 router.get("/Airplan-List",airportController.Airpordet);
+
+// Holidays details
 router.post("/Add-Holidays",holidayss.AddHolidays);
 router.get("/HolidayList",holidayss.GetHolidays);
 router.delete("/DeleteHoliday/:id",holidayss.DeleteHoliday);
 router.put("/UpdateHoliday/:id",holidayss.UpdateHoliday);
+
+// Hotels details
+
 router.post("/Add-hotel",Hotels.AddHotel);
 router.get("/Gethotels",Hotels.HotelList);
 router.delete("/Delete-Hotel/:id",Hotels.DeletHotel);
 router.put("/Update-Hotels/:id",Hotels.updateHotels);
+
+// Bank details 
 router.put("/Update-Bank/:id",Banks.updateBank);
 router.get("/Bank-List",Banks.getBank);
 router.get("/Bank-Single/:id",Banks.getBankSingle);
+
+// User details 
 router.post("/Add-User",Users.addUser);
 router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
+
+
 router.put("/Change-Password/:id",Users.changePassword);
 router.get("/test",Users.Test);
 router.put("/update-user/:row_id",Users.updateUser);
 router.get("/Single-user/:user_id",Users.getUserId);
+
+// Complaints detsila
 router.post("/complaints/:user_id",Complaints.addComplaints);
 router.get("/complaints/",Complaints.allComplaints);
 router.delete("/complaints/:row_id",Complaints.delete);
