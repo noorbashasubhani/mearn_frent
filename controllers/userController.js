@@ -75,7 +75,7 @@ exports.userLogin = async (req, res) => {
       const token = jwt.sign(
         { userId: user._id, email: user.email },
         process.env.JWT_SECRET_KEY, // Secret key from environment variables
-        { expiresIn: '2h' } // Token expiration time (e.g., 1 hour)
+        { expiresIn: '5s' } // Token expiration time (e.g., 1 hour)
       );
 
 
@@ -179,3 +179,35 @@ exports.Test=async(req,res)=>{
     res.status(500).json({message:"eroor",error});
   }
 }
+
+
+exports.updateUser = async (req, res) => {
+  const { first_name, last_name, email } = req.body;
+  const { row_id } = req.params;
+
+  try {
+    // Update user by their row_id
+    const updatedUser = await User.findByIdAndUpdate(
+      row_id,
+      { first_name, last_name, email },
+      { new: true }  // This will return the updated document
+    );
+
+    // Check if the user was found and updated
+    if (!updatedUser) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    // Respond with the updated user data
+    res.status(200).json({
+      message: "Profile updated successfully",
+      data: updatedUser
+    });
+  } catch (error) {
+    // Handle any error
+    res.status(500).json({
+      message: "Error updating user profile",
+      error: error.message
+    });
+  }
+};

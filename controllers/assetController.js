@@ -18,7 +18,7 @@ const user_id=req.user.userId;
 exports.getAssets = async(req,res)=>{
    try{
      const list = await Asset.find();
-     res.status(200).json({message:"Assets Detaiils ",data:list});
+     res.status(200).json({message:"Assets Detaiils",data:list});
    }catch(error){
      res.status(500).json({message:"faiiled",error});
    }

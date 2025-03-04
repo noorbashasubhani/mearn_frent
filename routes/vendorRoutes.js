@@ -65,6 +65,8 @@ router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
 router.put("/Change-Password/:id",Users.changePassword);
 router.get("/test",Users.Test);
+router.put("/update-user/:row_id",Users.updateUser);
+router.get("/Single-user/:user_id",Users.getUserId);
 router.post("/complaints/:user_id",Complaints.addComplaints);
 router.get("/complaints/",Complaints.allComplaints);
 router.delete("/complaints/:row_id",Complaints.delete);
