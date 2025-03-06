@@ -50,6 +50,13 @@ exports.addFlyerss = (req, res) => {
             });
         }
 
+        // Ensure file is uploaded
+        if (!req.file) {
+            return res.status(400).json({
+                message: 'No file uploaded!',
+            });
+        }
+
         // Ensure title and exp_Date are part of the body
         const { title, exp_Date } = req.body;
 
@@ -88,6 +95,7 @@ exports.addFlyerss = (req, res) => {
         }
     });
 };
+
 
 
 
@@ -169,8 +177,10 @@ exports.getFlyers = async (req, res) => {
 
 
 exports.getFlyersCloude = async (req, res) => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
     try {
-        const flyers = await Flyer.find(); // Get all flyers from the database
+        const flyers = await Flyer.find().sort({ createdAt: -1 }); // Get all flyers from the database
 
         if (flyers.length === 0) {
             return res.status(404).json({

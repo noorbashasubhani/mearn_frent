@@ -7,4 +7,7 @@ router.post('/Library', upload.single('libra_pdf'), libdataController.createLibd
 router.get('/Library-Details',libdataController.getAllLibdata);
 router.delete('/DeleteLib/:id',libdataController.delLib);
 
+
+router.post("/LibraryS",libdataController.addPdf);
+
 module.exports = router;

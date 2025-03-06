@@ -11,7 +11,10 @@ const flyerSchema = new mongoose.Schema({
     exp_Date: {
         type: Date
     },
-});
+    
+},{
+    timestamps: true, // Automatically adds createdAt and updatedAt
+  });
 
 const Flyer = mongoose.model("Flyer", flyerSchema);
 
