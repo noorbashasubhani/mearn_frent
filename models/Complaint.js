@@ -3,36 +3,45 @@ const mongoose = require('mongoose');
 const complaintSchema = mongoose.Schema({
     annonymus:{
         type:String,
-        required:true
     },
-    manger_id:{
-        type:Number,
-        required:true
+    manager_id:{
+        type:String,
     },
-    escalation_regarding:{
+    escalation_reg:{
         type:String,
     },
     concern_specific:{
         type:String,
     },
-    regard_any_request:{
+    regarding_any_empp:{
+        type:String,
+    },
+    regarding_any_req:{
         type:String,
     },
     other_reason:{
         type:String,
     },
-    concern:{
+    elaborate:{
         type:String,
     },
     added_by:{
         type : String,
+    },
+    status:{
+        type:String
+    },
+    reason_for_close:{
+        type:String
     },
     created_date:{
       type : Date,
       default: Date.now
     }
 
-})
+},{
+    timestamps: true, // Automatically adds createdAt and updatedAt
+  })
 
 const Complaints = mongoose.model("Complaints",complaintSchema);
 module.exports = Complaints;

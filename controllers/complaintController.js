@@ -1,18 +1,20 @@
 const Complaints = require("../models/Complaint");
 
 exports.addComplaints = async (req, res) => {
-   const { annonymus, manger_id, escalation_regarding, concern_specific, regard_any_request, other_reason, concern } = req.body;
+   const { annonymus, manager_id, escalation_reg,concern_specific, regarding_any_empp, regarding_any_req, other_reason, elaborate } = req.body;
    const { user_id } = req.params;
 
    try {
       const newData = new Complaints({
           annonymus,
-          manger_id,
-          escalation_regarding,
+          manager_id,
+          escalation_reg,
           concern_specific,
-          regard_any_request,
+          regarding_any_empp,
+          regarding_any_req,
           other_reason,
-          concern,
+          elaborate,
+          status:'Pending',
           added_by: user_id // user_id is passed from the URL
       });
 
@@ -27,7 +29,8 @@ exports.addComplaints = async (req, res) => {
 exports.allComplaints = async (req,res) =>{
    try{
 
-    const list = await Complaints.find();
+    const list = await Complaints.find().sort({ _id: -1 });
+
     res.status(200).json({message:"succces",data:list});
 
    }catch(error){
@@ -67,20 +70,23 @@ exports.delete = async(req,res)=>{
 
 exports.update = async (req, res) => {
   const { row_id } = req.params; // Extract the row_id (complaint's _id) from the request parameters
-  const { annonymus, manger_id, escalation_regarding, concern_specific, regard_any_request, other_reason, concern } = req.body;  // Extract fields to be updated from the body
+  const { annonymus, manager_id, escalation_reg,concern_specific, regarding_any_empp, regarding_any_req, other_reason, elaborate,reason_for_close ,status } = req.body;
   
   try {
       // Find and update the complaint by its _id
       const updatedComplaint = await Complaints.findByIdAndUpdate(
           row_id,  // _id of the complaint to update
           { 
-              annonymus, 
-              manger_id, 
-              escalation_regarding, 
-              concern_specific, 
-              regard_any_request, 
-              other_reason, 
-              concern 
+            annonymus,
+            manager_id,
+            escalation_reg,
+            concern_specific,
+            regarding_any_empp,
+            regarding_any_req,
+            other_reason,
+            elaborate,
+            reason_for_close,
+            status
           },
           { new: true }  // Return the updated document
       );
@@ -98,3 +104,5 @@ exports.update = async (req, res) => {
       res.status(500).json({ message: "Unable to update complaint", error: error.message });
   }
 };
+
+

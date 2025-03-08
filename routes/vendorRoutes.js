@@ -26,8 +26,15 @@ const Dcreditnote = require("../controllers/dcreditnoteController");
 const Team=require("../controllers/teamController");
 const Recovery=require("../controllers/recoveryController");
 const Asset = require("../controllers/assetController");
+const Package=require("../controllers/holidaypackageController");
+
+
+
+
+
 
 const authenticateToken = require("../middlewares/authenticateToken");
+
 
 
 
@@ -210,5 +217,12 @@ router.put("/Recovery/:row_id",authenticateToken,Recovery.updateRecovery);
 // Assets Details 
 router.post("/Assets",authenticateToken,Asset.addAssets);
 router.get("/Assets",authenticateToken,Asset.getAssets);
+
+
+// Package menu
+
+router.post("/Package/:user_id",Package.addPackage);
+router.get("/Package/:row_id",Package.getHoidaysOnly);
+router.get("/Package",Package.getHoidaysAll);
 
 module.exports = router;
