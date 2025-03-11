@@ -79,7 +79,6 @@ const jobPostingSchema = mongoose.Schema({
     },
     status: {
         type: String,  // e.g., "Open", "Closed"
-        
     },
     created_by: {
         type: String,  // This will likely be the user ID of the person who created the job posting

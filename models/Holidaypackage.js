@@ -10,11 +10,9 @@ const holidaypackageSchema = mongoose.Schema(
     destination:{type:String},
     cost:{type:String},
     added_by: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to the User model
-        required: true, // Required to ensure that a user is associated
+      type:String
       },
-      user_id: { type: mongoose.Schema.Types.ObjectId, required: true },
+      user_id: { type:String },
 },
 {timestamps:true}
 );

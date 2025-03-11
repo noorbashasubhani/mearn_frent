@@ -46,3 +46,14 @@ exports.getBankSingle = async (req,res) =>{
       res.status(500).json({ message: "Something went wrong", error: error.message });
     }
   }
+
+  exports.getUserBank = async (req,res) =>{
+    const { user_id } = req.params;
+      try{
+          const list = await Bank.findOne({ user_id: user_id });
+  
+       res.status(200).json(list);
+      }catch(error){
+        res.status(500).json({ message: "Something went wrong", error: error.message });
+      }
+    }

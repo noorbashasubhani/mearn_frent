@@ -37,10 +37,10 @@ exports.addSalary = async (req, res) => {
 };
 
 exports.getSalarydetails=async(req,res)=>{
-try{
-    const list = await Advancesalary.find();
-    res.status(200).json({message:"success",data:list});
-}catch(error){
-    res.status(500).json({message:"failed"});
-}
+    try{
+        const list = await Advancesalary.find();
+        res.status(200).json({message:"success",data:list});
+    }catch(error){
+        res.status(500).json({message:"failed"});
+    }
 }

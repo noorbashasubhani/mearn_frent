@@ -30,7 +30,8 @@ exports.addJobPosting = async (req, res) => {
             salaryrange_to,
             gender,
             application_dead_line,
-            created_by : user_id// This should be the user ID
+            created_by : user_id,
+            status:"Open"
         });
 
         const savedJob = await newJobPosting.save();
@@ -66,3 +67,23 @@ exports.GetSingleJobs = async(req,res) => {
       res.status(500).json({message:"failed",error});
     }
 }
+
+exports.closePosition=async(req,res)=>{
+    const {row_id} = req.params;
+    try{
+        const list =await Position.findByIdAndUpdate(row_id,{status:"Closed"},{new:true});
+        res.status(200).json({message:"success"});
+    }catch(error){
+      res.status(500).json({message:"failed",error});
+    }
+};
+
+exports.DeletePosition=async(req,res)=>{
+    const {row_id} = req.params;
+    try{
+        const list =await Position.findByIdAndUpdate(row_id,{status:"Delete"},{new:true});
+        res.status(200).json({message:"success"});
+    }catch(error){
+      res.status(500).json({message:"failed",error});
+    }
+};

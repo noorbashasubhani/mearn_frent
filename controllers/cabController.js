@@ -85,3 +85,56 @@ exports.delCab = async (req, res) => {
     res.status(500).json({ message: "Something went wrong..." });
   }
 };
+
+exports.updateCab = async (req, res) => {
+  const {
+    state_name,
+    service_location,
+    supplier_name,
+    email_contact,
+    vehicle_type,
+    seating_capacity,
+    per_day_cost,
+    rate_per_km,
+    color_status
+  } = req.body;
+  const { row_id } = req.params;
+
+  try {
+    // Use findByIdAndUpdate to update the cab directly
+    const updatedCab = await Cab.findByIdAndUpdate(
+      row_id,
+      {
+        state_name,
+        service_location,
+        supplier_name,
+        email_contact,
+        vehicle_type,
+        seating_capacity,
+        per_day_cost,
+        rate_per_km,
+        color_status
+      },
+      { new: true } // This will return the updated cab object after the update
+    );
+
+    if (!updatedCab) {
+      return res.status(404).json({
+        message: "Cab not found with the provided ID",
+      });
+    }
+
+    res.status(200).json({
+      message: "Cab details updated successfully",
+      data: updatedCab,
+    });
+  } catch (error) {
+    console.error("Error updating cab:", error);
+    res.status(500).json({
+      message: "Something went wrong while updating the cab",
+      error: error.message,
+    });
+  }
+};
+
+

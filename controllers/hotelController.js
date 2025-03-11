@@ -42,7 +42,7 @@ exports.DeletHotel = async (req,res) => {
 }
 
 exports.updateHotels = async (req,res) => {
-    const {hotel_state,hotel_city,hotel_name,distance_from,price,contact_no,hotel_addres,google_link} = req.body;
+  const {hotel_state,hotel_city,hotel_name,distance_from,price,contact_no,hotel_addres,google_link} = req.body;
     const {id}=req.params;
     try{
      

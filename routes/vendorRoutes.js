@@ -60,11 +60,14 @@ router.get("/GroupDesinations",designationController.getGroupDesignations);
 router.post("/add-cab",cabController.addCab);
 router.get("/Cab-list",cabController.cabDatails);
 router.delete("/DeleteCab/:id",cabController.delCab);
+router.put("/Cabs/:row_id",cabController.updateCab);
 
 // Airport Details
 
 router.post("/Add-Airports",airportController.createAirport);
 router.get("/Airplan-List",airportController.Airpordet);
+router.delete("/Airport/:row_id",airportController.delAir);
+router.put("/Airport/:row_id",airportController.updateAirport);
 
 // Holidays details
 router.post("/Add-Holidays",holidayss.AddHolidays);
@@ -83,6 +86,9 @@ router.put("/Update-Hotels/:id",Hotels.updateHotels);
 router.put("/Update-Bank/:id",Banks.updateBank);
 router.get("/Bank-List",Banks.getBank);
 router.get("/Bank-Single/:id",Banks.getBankSingle);
+router.get("/User-Bank/:user_id",Banks.getUserBank);
+
+
 
 // User details 
 router.post("/Add-User",Users.addUser);
@@ -189,12 +195,17 @@ router.get("/Advancesalary",advance.getSalarydetails);
 router.post("/Positions/:user_id",Position.addJobPosting);
 router.get("/Positions",Position.GetAllJobs);
 router.get("/Positions/:row_id",Position.GetSingleJobs);
+router.put("/PositionsClose/:row_id",Position.closePosition);
+router.put("/PositionsDelete/:row_id",Position.DeletePosition);
+
 
 // Notification details
 
 router.post("/Notifications",Notification.AddNotification);
 router.get("/Notifications",Notification.NotificationList);
 router.get("/Notifications/:row_id",Notification.getSinleNotification);
+router.delete("/Notifications/:row_id",Notification.delNotificaton);
+router.put("/Notifications/:row_id",Notification.readStatus);
 
 
 
@@ -224,5 +235,7 @@ router.get("/Assets",authenticateToken,Asset.getAssets);
 router.post("/Package/:user_id",Package.addPackage);
 router.get("/Package/:row_id",Package.getHoidaysOnly);
 router.get("/Package",Package.getHoidaysAll);
+router.delete("/Package/:row_id",Package.deletePack);
+router.put("/Package/:row_id",Package.updatePack);
 
 module.exports = router;
