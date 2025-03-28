@@ -27,7 +27,7 @@ const Team=require("../controllers/teamController");
 const Recovery=require("../controllers/recoveryController");
 const Asset = require("../controllers/assetController");
 const Package=require("../controllers/holidaypackageController");
-
+const Ratechat=require("../controllers/ratechatController");
 
 
 
@@ -95,6 +95,9 @@ router.post("/Add-User",Users.addUser);
 router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
+router.post("/Registration",Users.employeeRegistartions);
+router.put("/Bank-Update/:row_id",Users.updateBank);
+
 
 
 router.put("/Change-Password/:id",Users.changePassword);
@@ -111,7 +114,7 @@ router.put("/complaints/:row_id",Complaints.update);
 
 //   Includes and excludes 
 router.post("/inc-exc/:user_id",Inclusion.createInclusions);
-router.get("/inc-exc",Inclusion.getAll);
+router.get("/incexc",Inclusion.getAll);
 router.get("/inc-exc/:row_id",Inclusion.getSinglerow);
 router.delete("/inc-exc/:row_id",Inclusion.delete);
 router.put("/inc-exc/:row_id",Inclusion.updatess);
@@ -181,6 +184,7 @@ router.put("/Taxe/:row_id",Taxes.updateTax);
 router.post("/Registration",Registration.empRegistration);
 router.get("/Employee-Details/:user_id",Registration.getUserWithReference);
 router.get("/Employelist",Registration.empDetails);
+router.post("/Partner-Registration",Registration.parttRegistartions);
 
 // Rip Details
 router.post("/RIP/:user_id",Rip.AddRip);
@@ -226,8 +230,10 @@ router.get("/Recovery",authenticateToken,Recovery.getRecovery);
 router.put("/Recovery/:row_id",authenticateToken,Recovery.updateRecovery);
 
 // Assets Details 
-router.post("/Assets",authenticateToken,Asset.addAssets);
-router.get("/Assets",authenticateToken,Asset.getAssets);
+router.post("/Assets",Asset.addAssets);
+router.get("/Assets",Asset.getAssets);
+router.delete("/Assets/:row_id",Asset.delAss);
+router.put("/Assets/:row_id",Asset.updateAssets);
 
 
 // Package menu
@@ -237,5 +243,12 @@ router.get("/Package/:row_id",Package.getHoidaysOnly);
 router.get("/Package",Package.getHoidaysAll);
 router.delete("/Package/:row_id",Package.deletePack);
 router.put("/Package/:row_id",Package.updatePack);
+
+
+router.post("/Rate-chat",Ratechat.addRatechat);
+router.get("/Rate-chat",Ratechat.getsRates);
+router.delete("/Rate-chat/:row_id",Ratechat.deletRates);
+router.put("/Rate-chat/:row_id",Ratechat.editRatechat);
+
 
 module.exports = router;

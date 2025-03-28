@@ -15,7 +15,7 @@ exports.createInclusions = async (req,res) => {
 
     const dats = await newData.save();
     if(!dats){
-        res.status(200).json({message:"Somthing went wrong.."});
+        res.status(400).json({message:"Somthing went wrong.."});
     }
     res.status(200).json({message:"Data Saved Succesfully..",data:newData});
    }catch(error){
@@ -25,8 +25,8 @@ exports.createInclusions = async (req,res) => {
 
 exports.getAll = async(req,res)=>{
     try{
-        const list = await Inclusion.find().sort({ created_date: 1 });;
-        res.status(500).json({message:"succes",data:list});
+        const list = await Inclusion.find().sort({ _id: -1 });;
+        res.status(200).json({message:"succes",data:list});
     }catch(error){
      res.status(500).json({message:"unble get data"});
     }
