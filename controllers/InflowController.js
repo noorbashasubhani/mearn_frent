@@ -1,19 +1,17 @@
 const Inflow = require("../models/Inflow");
 
 exports.addInflow = async (req,res) => {
-  const {name} = req.body;
-  const {user_id} = req.params;
+  const {name,status} = req.body
   try{
    const newData = new Inflow ({
     name,
-    added_by:user_id,
     status:'Y'
    })
    const infs = await newData.save();
    if(! infs){
     res.status(500).json({message:"Data not saved"});
    }
-    res.status(200).json({message:"success",data:newData});
+    res.status(200).json({message:"success",data:infs});
   } catch(error){
     res.status(500).json({message:"Failed",error});
   }

@@ -21,7 +21,7 @@ exports.addRecovery = async(req,res)=>{
 
 exports.getRecovery = async(req,res)=>{
     try{
-       const list = await Recovery.find();
+       const list = await Recovery.find().populate("added_by","first_name");
        res.status(200).json({message:"getng data successfully..",data:list});
     }catch(error){
         res.status(500).json({message:"failed",error});

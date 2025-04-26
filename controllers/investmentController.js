@@ -6,7 +6,6 @@ exports.addInst = async (req,res) => {
   try{
    const newData = new Investments ({
     name,
-    added_by:user_id,
     status:'Y'
    })
    const infs = await newData.save();

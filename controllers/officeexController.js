@@ -2,11 +2,10 @@ const Officeexc = require("../models/Officeexc");
 
 exports.addOfiiceexc = async (req,res) => {
   const {name} = req.body;
-  const {user_id} = req.params;
+ // const {user_id} = req.params;
   try{
    const newData = new Officeexc ({
     name,
-    added_by:user_id,
     status:'Y'
    })
    const infs = await newData.save();

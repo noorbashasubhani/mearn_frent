@@ -8,7 +8,13 @@ name:{
 libra_pdf:{
     type:String,
     required:true
+},
+added_by:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:'User'
 }
+},{
+    timestamps:true
 });
 
 const Libdata = mongoose.model("Libdata",libdataSchema);

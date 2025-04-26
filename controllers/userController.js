@@ -80,10 +80,10 @@ exports.userLogin = async (req, res) => {
 
 
       // Login successful - send success message
-      res.status(200).json({ message: "User Login successful",token: token });
+      res.status(200).json({ message: "User Login successful",token: token, user_id:user._id });
 
   } catch (error) {
-      console.error("Login error:", error); // Log error for debugging purposes
+      console.error("Login error:", error.message); // Log error for debugging purposes
       res.status(400).json({ message: "Something went wrong" });
   }
 };
@@ -218,11 +218,11 @@ exports.employeeRegistartions = async (req, res) => {
     first_name, last_name, email, password, gender,
     fathername, mothername, fathername_no, mothername_no,
     date_of_birthday, mobile_no, department_id, designation_id, castname,
-    address, contact_number, user_type,status, pan_number, are_you_fresher, previous_company,
+    address, user_type,status, pan_number, are_you_fresher, previous_company,
     previous_designation, reporting_manager_name, reporting_manager_no, from_date,
     to_date, experience_details, heigher_qualification, qualification_year,
     pecentage, institute_name, google_link, bank_name, branch_name, bank_ac_number, ifc_no,
-    ref_no_one, ref_no_two, ref_mobile_one, ref_mobile_two,employee_id,password_visible
+    ref_no_one, ref_no_two, ref_mobile_one, ref_mobile_two,password_visible
   } = req.body;
   try {
     // Hash the password before saving
@@ -244,12 +244,11 @@ exports.employeeRegistartions = async (req, res) => {
       first_name, last_name, email, password: hashedPassword, gender,
       fathername, mothername, fathername_no, mothername_no,
       date_of_birthday, mobile_no, department_id, designation_id, castname,
-      address, contact_number, user_type: 'E',status:'P', pan_number, are_you_fresher, previous_company,
+      address, user_type,status, pan_number, are_you_fresher, previous_company,
       previous_designation, reporting_manager_name, reporting_manager_no, from_date,
       to_date, experience_details, heigher_qualification, qualification_year,
       pecentage, institute_name, google_link, bank_name, branch_name, bank_ac_number, ifc_no,
-      ref_no_one, ref_no_two, ref_mobile_one, ref_mobile_two,
-      employee_id: newEmpcode,password_visible // Assign the dynamically generated Empcode
+      ref_no_one, ref_no_two, ref_mobile_one, ref_mobile_two,password_visible:password // Assign the dynamically generated Empcode
     });
     // Save the new user to the database
     const savedUser = await newData.save();
@@ -304,3 +303,63 @@ exports.updateBank = async (req, res) => {
   }
 };
 
+exports.getbirthday=async(req,res)=>{
+  try{
+   const getbirth=await User.find()
+     .populate('department_id', 'name')     // assuming 'name' is the field you want from Department
+     .populate('designation_id', 'name');
+     
+   res.status(200).json({message:"success",data:getbirth});
+  }catch(err){
+    console.log(err.message);
+  }
+}
+exports.delUser = async (req, res) => {
+  try {
+    const { row_id } = req.params;  // Assuming the user ID is passed in the route parameter
+    // Find and delete the user by ID
+    const getbirth = await User.findByIdAndDelete(row_id);
+    if (!getbirth) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    // Send the success response
+    res.status(200).json({ message: "User deleted successfully", data: getbirth });
+  } catch (err) {
+    console.error(err.message);
+    // Send the error response
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
+};
+
+
+exports.Pending_list=async(req,res)=>{
+  try{
+    const list = await User.find({
+      status: "P"
+    });
+    res.status(200).json({message:"success",data:list});
+  }catch(error){
+    res.status(500).json({message:"eroor",error});
+  }
+}
+
+
+
+exports.emailCheck = async (req, res) => {
+  const { email } = req.params;
+  try {
+    // Find users that match the provided email
+    const list = await User.find({ email: email });
+
+    if (list.length > 0) {
+      // Email exists in the database
+      return res.status(200).json({ message: "Email already exists" });
+    } else {
+      // Email is available (not found in the database)
+      return res.status(200).json({ message: "Email is available" });
+    }
+  } catch (err) {
+    // Handle any errors during the database operation
+    return res.status(500).json({ message: "Server error", error: err.message });
+  }
+};

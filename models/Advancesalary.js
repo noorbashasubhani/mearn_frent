@@ -1,27 +1,23 @@
 const mongoose = require('mongoose');
 const advanceSalarySchema = new mongoose.Schema({
     amount: {
-        type: Number,
-        required: true
+      type: Number
     },
-    managers_names: {
-        type: [String],
-        required: true  // Ensures that the managers_names field is required
-    },
+    managers_names: [{
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }],
     added_by: {
-        type: String,
-        required: true
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     },
     status: {
-        type: String,
-        required: true,
-        default: 'Y'
-    },
-    created_date: {
-        type: Date,
-        default: Date.now
+      type: String
     }
-});
+  },{
+    timestamps:true
+  });
+  
 
 
 const Advancesalary = mongoose.model("Advancesalary",advanceSalarySchema); 

@@ -10,19 +10,18 @@ const teamSchema = mongoose.Schema({
         type:String
     },
     dept_head:{
-        type:String
+        type: mongoose.Schema.Types.ObjectId, ref: "User"
     },
     dept_lead:{
-        type:String
+        type: mongoose.Schema.Types.ObjectId, ref: "User"
     },
-    team_employees:{
-        type:[String]
-    },
-    created_date:{
-        type:Date,
-        default:Date.now
-    },
+    team_employees: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User' // or 'Employee' — depends on your model name
+    }],
     added_by: { type: mongoose.Schema.Types.ObjectId, ref: "User"}
+},{
+    timestamps:true
 })
 
 const Team = mongoose.model('Team',teamSchema);

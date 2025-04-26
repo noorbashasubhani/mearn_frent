@@ -16,12 +16,13 @@ const recoverySchema = mongoose.Schema({
         type:Number
     },
     added_by:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:"User"
+    },status:{
         type:String
-    },
-    created_date:{
-        type:Date,
-        default:Date.now
     }
+},{
+    timestamps:true
 });
 const Recovery = mongoose.model("Recovery",recoverySchema);
 module.exports=Recovery;

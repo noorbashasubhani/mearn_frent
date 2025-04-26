@@ -1,13 +1,13 @@
 const mongoose = require("mongoose");
 const ripSchema = mongoose.Schema({
     employee_name: {
-        type: String,
-        required: true  // Making employee_name required
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'User'
     },
-    visible_to: {
-        type: [String],
-        required: true  // Ensuring visibility is required
-    },
+    visible_to:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
+    }],
     from_to_date: {
         type: {
             from: {
@@ -18,8 +18,7 @@ const ripSchema = mongoose.Schema({
                 type: Date,
                 required: true  // Making the 'to' date required
             },
-        },
-        required: true  // Ensuring from_to_date is required
+        }
     },
     no_of_confirmations: {
         type: Number,  // Changed to Number instead of String
@@ -33,12 +32,11 @@ const ripSchema = mongoose.Schema({
         type:String
     },
     created_by:{
-        type:String
-    },
-    created_date:{
-        type:Date,
-        default:Date.now
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'User'
     }
+},{
+    timestamps:true
 });
 
 // Create the model and export it

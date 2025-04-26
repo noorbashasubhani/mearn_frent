@@ -2,11 +2,10 @@ const Tax = require("../models/Taxe");
 
 exports.addTax = async (req,res) => {
   const {name} = req.body;
-  const {user_id} = req.params;
+  
   try{
    const newData = new Tax ({
     name,
-    added_by:user_id,
     status:'Y'
    })
    const infs = await newData.save();

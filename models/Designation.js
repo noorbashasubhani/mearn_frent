@@ -3,14 +3,11 @@ const mongoose = require("mongoose");
 
 const designationSchema = new mongoose.Schema({
   name: {
-    type: String,
-    required: true,
-    unique: true,
+    type: String
   },
   department: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Department", // References the Department model
-    required: true,
+    ref: "Department"
   },
 });
 

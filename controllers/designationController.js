@@ -4,41 +4,18 @@ const mongoose = require('mongoose');
 
 exports.addDesignation = async (req, res) => {
     // Log the incoming request body
-    const { departmentId, designationName } = req.body;
-
-    // Validate the inputs
-    if (!departmentId || !designationName) {
-        return res.status(400).json({
-            message: "Department ID and Designation Name are required",
-        });
-    }
-
+    const { name, department } = req.body;
     try {
-        // Convert departmentId to ObjectId
-        const deptId = new mongoose.Types.ObjectId(departmentId);  // Ensure the correct instantiation using 'new'
-        
-        // Check if the department exists
-        const department = await Department.findById(deptId);
-        
-        if (!department) {
-            return res.status(404).json({
-                message: "Department not found",
-            });
-        }
-
-        // Create a new designation
         const designation = new Designation({
-            name: designationName,
-            department: deptId,  // Associate with the department's ObjectId
+            name: name,
+            department: department,  // Associate with the department's ObjectId
         });
-
         // Save the new designation
         await designation.save();
-
         // Return the success response with the created designation
         res.status(201).json({
             message: "Designation added successfully",
-            designation,
+            data:designation,
         });
     } catch (error) {
         console.error("Error while adding designation:", error);

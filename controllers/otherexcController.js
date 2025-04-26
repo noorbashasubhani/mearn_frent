@@ -3,10 +3,10 @@ const Otherexc = require("../models/Otherexc");
 exports.addOtherflow = async (req,res) => {
   const {name} = req.body;
   const {user_id} = req.params;
+  
   try{
    const newData = new Otherexc ({
     name,
-    added_by:user_id,
     status:'Y'
    })
    const infs = await newData.save();

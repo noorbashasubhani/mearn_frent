@@ -2,88 +2,74 @@ const mongoose = require("mongoose");
 
 const jobPostingSchema = mongoose.Schema({
     department_name: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Department'
     },
     role: {
-        type: String,
-        required: true
+        type: String
     },
     designation_name: {
-        type: String,
-        required: true
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Designation'
     },
     candidate_type: { 
-        type: String, 
-        required: true, // e.g., "Full-time", "Part-time", "Intern"
+        type: String
     },
     no_of_candidates: {
         type: Number,
-        required: true,
         default: 1
     },
     job_desc: {
-        type: String,
-        required: true
+        type: [String]
     },
     role_and_responces: {
-        type: String,
-        required: true
+        type: [String]
     },
     skills: {
-        type: [String],  // Array of strings to store multiple skills
-        required: true
+        type: [String]
     },
     experience: {
-        type: Number,  // Total experience required for the role (in years)
-        required: true
+        type: Number
     },
     relevant_exp: {
-        type: Number,  // Relevant experience (in years)
-        required: true
+        type: String
     },
     employee_type: {
-        type: String, // Full-time, part-time, contract, etc.
-        required: true
+        type: String
     },
     education: {
-        type: String,  // Educational qualifications required for the role
-        required: true
+        type: String
     },
     job_location: {
-        type: String,
-        required: true
+        type: String
     },
     language: {
-        type: [String],  // Languages required for the role
-        required: true
+        type: [String]
     },
     salaryrange_from: {
-        type: Number,  // Minimum salary
-        required: true
+        type: Number
     },
     salaryrange_to: {
-        type: Number,  // Maximum salary
-        required: true
+        type: Number
     },
     gender: {
         type: String,
     },
     application_dead_line: {
-        type: Date,  // Deadline for applying
-        required: true
-    },
-    created_date: {
-        type: Date,
-        default: Date.now
+        type: Date
     },
     status: {
         type: String,  // e.g., "Open", "Closed"
     },
+    closed_date:{
+      type:Date
+    },
     created_by: {
-        type: String,  // This will likely be the user ID of the person who created the job posting
-        required: true
+        type: mongoose.Schema.Types.ObjectId,  // This will likely be the user ID of the person who created the job posting
+        ref:'User'
     }
+},{
+    timestamps:true
 });
 
 // Create the model and export it

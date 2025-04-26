@@ -33,12 +33,7 @@ const complaintSchema = mongoose.Schema({
     },
     reason_for_close:{
         type:String
-    },
-    created_date:{
-      type : Date,
-      default: Date.now
     }
-
 },{
     timestamps: true, // Automatically adds createdAt and updatedAt
   })

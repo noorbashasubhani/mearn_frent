@@ -1,12 +1,9 @@
 const mongoose = require("mongoose");
-const dcreditnoteSchema = mongoose.Schema({
-    city_name:{
+const icreditSchema = mongoose.Schema({
+    country_name:{
         type:String,
     },
-    service_type:{
-        type:String
-    },
-    hotel_name:{
+    sup_name:{
         type:String,
     },
     issue_date:{
@@ -21,6 +18,9 @@ const dcreditnoteSchema = mongoose.Schema({
     amount:{
         type:Number
     },
+    currency_type:{
+        type:String
+    },
     added_by:{
         type:mongoose.Schema.Types.ObjectId,
         ref:"User",
@@ -29,5 +29,5 @@ const dcreditnoteSchema = mongoose.Schema({
     timestamps:true
 })
 
-const dcreditnote = mongoose.model("dcreditnote",dcreditnoteSchema);
-module.exports = dcreditnote;
+const icredit = mongoose.model("icredit",icreditSchema);
+module.exports = icredit;

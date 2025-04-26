@@ -97,6 +97,7 @@ exports.addPdf = (req, res) => {
 
 exports.createLibdata = async (req, res) => {
   const { name } = req.body;
+  const addedby = req.user.userId;
   const file = req.file;
 
   if (!file) {
@@ -107,6 +108,7 @@ exports.createLibdata = async (req, res) => {
     const newLibdata = new Libdata({
       name,
       libra_pdf: file.path,
+      added_by: addedBy || null
     });
 
     await newLibdata.save();

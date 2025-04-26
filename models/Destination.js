@@ -3,20 +3,16 @@ const mongoose = require("mongoose");
 const destinationSchema = mongoose.Schema({
     destination_name: {
         type: String,
-        required: true,
         unique: true
     },
     latitude: {
-        type: String,
-        required: true
+        type: String
     },
     longitude: {
-        type: String,
-        required: true
+        type: String
     },
     destination: {
-        type: String,
-        required: true
+        type: String
     },
     is_country: {
         type: String,
@@ -37,7 +33,8 @@ const destinationSchema = mongoose.Schema({
         type: String,
     },
     added_by: {
-        type: String
+         type: mongoose.Schema.Types.ObjectId,
+        ref:'Destination'
     }
 }, { timestamps: true }); // Corrected to 'timestamps: true'
 

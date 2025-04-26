@@ -2,7 +2,7 @@ const Destination = require("../models/Destination");
 
 exports.createDestination = async(req,res) =>{
    const {destination_name,latitude,longitude,destination,is_country,is_state,is_city,is_cruise,country_id,state_id}=req.body;
-   const {user_id}=req.params;
+   const user_id=req.user.userId;
    try{
     const newData = new Destination({
         destination_name,
@@ -22,7 +22,7 @@ exports.createDestination = async(req,res) =>{
         res.status(400).json({message:"Unable to load"});
     }
 
-    res.status(200).json({message:"Saved Successfully"});
+    res.status(200).json({message:"Saved Successfully",data:saveddata});
    }catch(error){
     res.status(500).json({message:"Unable to load"});
    }

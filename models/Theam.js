@@ -11,7 +11,12 @@ const theamSchema = mongoose.Schema({
    },
    status:{
     type:String
+   },added_by:{
+      type:mongoose.Schema.Types.ObjectId,
+      ref:'User'
    }
+},{
+   timestamps:true
 });
 const Theam = mongoose.model("Theam",theamSchema);
 module.exports=Theam;

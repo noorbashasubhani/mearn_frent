@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { applyTimestamps } = require("./Vendor");
 const userSchema = mongoose.Schema({
     first_name : {type : String},
     last_name : {type : String},
@@ -14,8 +15,14 @@ const userSchema = mongoose.Schema({
     leave:{type:String},
     date_of_birthday:{type:Date},
     mobile_no:{type:String},
-    department_id:{type:String},
-    designation_id:{type:String},
+    department_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Department'
+    },
+    designation_id:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Designation'
+    },
     castname:{type:String},
     office_contact_no:{type:String},
     office_contact_email:{type:String},
@@ -54,7 +61,10 @@ const userSchema = mongoose.Schema({
     assing_partners:{type:String},
     employee_id: {type:String},
     password_visible:{type:String},
-    partner_type:{type:String}
+    partner_type:{type:String},
+    requested_date: { type: Date, default: Date.now }
+},{
+    timestamps:true
 });
 
 
