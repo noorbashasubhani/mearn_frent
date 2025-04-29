@@ -32,6 +32,8 @@ const Employee=require("../controllers/EmployeeController.js");
 const Icredit=require("../controllers/icreditController.js");
 const Mybank=require("../controllers/mybankController.js");
 const Leaves=require("../controllers/LeavesController.js");
+const lead=require("../controllers/LeadController.js");
+const Comment=require("../controllers/commentController.js");
 
 
 const authenticateToken = require("../middlewares/authenticateToken");
@@ -98,6 +100,7 @@ router.get("/Birthdays",authenticateToken,Users.getbirthday);
 router.delete("/DelUser/:row_id",Users.delUser);
 router.get("/Pendinguser",Users.Pending_list);
 router.get("/Email-check/:email",Users.emailCheck);
+router.get("/Partners",Users.partnerList);
 
 router.put("/Change-Password/:id",Users.changePassword);
 router.get("/test",Users.Test);
@@ -274,8 +277,22 @@ router.put("/My-bank/:row_id",Mybank.updateMybank);
 // Leave Managements 
 
 router.post("/Leaves",authenticateToken,Leaves.addLeave);
-router.get("/Leaves/:user_id",Leaves.getLeaves);
+router.get("/Leaves",Leaves.getLeaves);
 router.get("/SingleLeaves/:row_id",Leaves.getSingle);
 
+
+// LEADS DETAILS
+router.post("/lead",authenticateToken,lead.addLead);
+router.get("/lead",lead.getLead);
+router.put("/lead/:row_id",lead.update);
+router.put("/Assign/:row_id",lead.updateAssign);
+router.get("/rnrleads",lead.getLeadRnr);
+router.post("/Processed/:row_id",authenticateToken,lead.processed);
+
+
+// Comments details
+router.post("/Comment",authenticateToken,Comment.addComment);
+router.get("/Comment/:lead_id",Comment.getComment);
+router.post("/Executive-Commant/:lead_id",authenticateToken,Comment.getExc);
 
 module.exports = router;

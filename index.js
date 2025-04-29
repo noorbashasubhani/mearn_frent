@@ -73,9 +73,6 @@ app.post('/send-email', (req, res) => {
 
 
 
-
-
-
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Successfully connected to MongoDB! .....................");

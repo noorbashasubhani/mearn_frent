@@ -363,3 +363,15 @@ exports.emailCheck = async (req, res) => {
     return res.status(500).json({ message: "Server error", error: err.message });
   }
 };
+
+
+exports.partnerList=async(req,res)=>{
+  try{
+    const list = await User.find({
+      status:  { $ne: "P" }
+    });
+    res.status(200).json({message:"success",data:list});
+  }catch(error){
+    res.status(500).json({message:"eroor",error});
+  }
+}

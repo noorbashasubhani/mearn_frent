@@ -16,15 +16,10 @@ exports.addLeave=async(req,res)=>{
 
 
 exports.getLeaves = async (req, res) => {
-    const { user_id } = req.params;
+    //const { user_id } = req.params;
   
     try {
-      const list = await Leaves.find({
-        $or: [
-          { added_by: user_id },
-          { to_manger: user_id }
-        ]
-      })
+      const list = await Leaves.find()
       .populate('to_manger', 'first_name') 
       .populate('added_by', 'first_name');
   
