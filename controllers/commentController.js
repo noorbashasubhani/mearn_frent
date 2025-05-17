@@ -35,7 +35,7 @@ exports.getComment = async (req, res) => {
 
 
   exports.getExc = async (req, res) => {
-    const { message } = req.body;
+    const { messages } = req.body;
     const user_id = req.user.userId;
     const { lead_id } = req.params;
     let newmsg = '';
@@ -43,7 +43,7 @@ exports.getComment = async (req, res) => {
   
     try {
       // Set message and update lead status if needed
-      switch (message) {
+      switch (messages) {
         case 'R':
           newmsg = "Moved to R-N-R Leads";
           updatedLead = await Lead.findByIdAndUpdate(
@@ -118,9 +118,64 @@ exports.getComment = async (req, res) => {
       res.status(200).json({
         message: 'Data Saved',
         comment: savedComment,
-        updatedLead
+        data:updatedLead
       });
     } catch (error) {
       res.status(500).json({ message: 'Error saving comment', error: error.message });
     }
   };
+
+
+  
+  exports.getUniqueOperationExecutives = async (req, res) => {
+    try {
+      const uniqueExecutives = await Lead.aggregate([
+        {
+          $match: {
+            "operation_executive": { $exists: true, $ne: null } // Ensure operation_executive exists and is not null
+          }
+        },
+        {
+          $group: {
+            _id: "$operation_executive._id", // Group by operation_executive._id to get unique executives
+            first_name: { $first: "$operation_executive.first_name" },
+            last_name: { $first: "$operation_executive.last_name" }
+          }
+        },
+        {
+          $project: {
+            executive_id: "$_id", // Map _id to executive_id
+            executive_name: {
+              $concat: [
+                { $ifNull: ["$first_name", ""] },
+                " ",
+                { $ifNull: ["$last_name", ""] }
+              ]
+            },
+            _id: 0 // Hide _id field in the final output
+          }
+        }
+      ]);
+  
+      if (uniqueExecutives.length === 0) {
+        return res.status(404).json({
+          message: "No operation executives found",
+          data: []
+        });
+      }
+  
+      res.status(200).json({
+        message: "Unique operation executives fetched successfully",
+        data: uniqueExecutives
+      });
+    } catch (err) {
+      res.status(500).json({
+        message: "Error occurred while fetching unique operation executives",
+        error: err.message
+      });
+    }
+  };
+
+
+  
+  

@@ -34,6 +34,7 @@ const Mybank=require("../controllers/mybankController.js");
 const Leaves=require("../controllers/LeavesController.js");
 const lead=require("../controllers/LeadController.js");
 const Comment=require("../controllers/commentController.js");
+const Accounts=require("../controllers/AccountController.js");
 
 
 const authenticateToken = require("../middlewares/authenticateToken");
@@ -284,15 +285,35 @@ router.get("/SingleLeaves/:row_id",Leaves.getSingle);
 // LEADS DETAILS
 router.post("/lead",authenticateToken,lead.addLead);
 router.get("/lead",lead.getLead);
+router.get("/singlelead/:lead_id",lead.getLeadsdetails);
 router.put("/lead/:row_id",lead.update);
-router.put("/Assign/:row_id",lead.updateAssign);
+router.put("/Delete-pending/:row_id",lead.pendingDelete);
+router.put("/Assign/:row_id",authenticateToken,lead.updateAssign);
 router.get("/rnrleads",lead.getLeadRnr);
-router.post("/Processed/:row_id",authenticateToken,lead.processed);
-
+router.put("/Processed/:lead_id",authenticateToken,lead.processed);
+router.get("/Processed-delete",lead.deleteLead);
+router.get("/Executives-summary",lead.getUniqueOperationExecutives);
+router.delete("/Leadsdel",lead.parmentDelet);
+router.get("/DayleadCount",lead.gettotaldaywisecount);
+router.get("/DaypreleadCount",lead.getpretotaldaywisecount);
+router.get("/Lead-Sources-list",lead.getLeadSourceHolidaySplit);
+router.get("/Lead-Search-list",lead.getSearchLeadsdetails);
+router.get("/Pending-Itenary",lead.getItenery);
+router.get("/Delete-Itenarylist",lead.getDeletedItenery);
+router.get("/All-Leads",lead.allLeads);
+router.put("/Customer-inf/:row_id",lead.customerinf);
 
 // Comments details
 router.post("/Comment",authenticateToken,Comment.addComment);
 router.get("/Comment/:lead_id",Comment.getComment);
-router.post("/Executive-Commant/:lead_id",authenticateToken,Comment.getExc);
+router.post("/ExecutiveCommant/:lead_id",authenticateToken,Comment.getExc);
+
+
+
+router.post("/Add-acc",Accounts.addAcc);
+router.get("/GetAcc",Accounts.getData);
+router.put('/update-acc/:account_id', Accounts.updateAcc);
+
+
 
 module.exports = router;

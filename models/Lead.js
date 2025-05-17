@@ -36,7 +36,8 @@ const leadSchema = new mongoose.Schema(
         ref: 'User'
       },
     previous_operation_executive: {
-      type: mongoose.Schema.Types.ObjectId
+      type: mongoose.Schema.Types.ObjectId,
+      ref:'User'
     },
     reason:{
      type:String
@@ -130,9 +131,12 @@ const leadSchema = new mongoose.Schema(
     sight_prefaring:{
       type:String
     },
+    emi_amount:{
+      type: String
+    },
     special_includes:{
       type:String
-    },budget:{
+    },budget_amount:{
       type:String
     },
     do_you_want:{
@@ -145,10 +149,36 @@ const leadSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
+    itenary_status:{
+      type:String
+    },
+    delete_from:{
+      type:String
+    },
     lead_status: {
       type: String,
-      default: 'L', // Default value of 'L' if not specified
-    },
+      default: 'L', 
+    },visa:{
+      type: String
+    },ticket:{
+      type: String
+    },honey:{
+      type: String
+    },day_break:{
+      type: String
+    },insurance:{
+      type: String
+    },early:{
+      type: String,
+    },activity:{
+      type: String
+    },chekcout:{
+      type: String
+    },guide:{
+      type: String
+    },dinner:{
+      type: String
+    }
   },
   {
     timestamps: true, // Automatically adds createdAt and updatedAt fields
