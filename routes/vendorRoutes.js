@@ -35,9 +35,22 @@ const Leaves=require("../controllers/LeavesController.js");
 const lead=require("../controllers/LeadController.js");
 const Comment=require("../controllers/commentController.js");
 const Accounts=require("../controllers/AccountController.js");
+const Tee=require('../controllers/TeeController.js');
+const Test=require('../controllers/TestController.js');
+const Buss=require('../controllers/BusController.js');
+const Train=require('../controllers/TrainController.js');
+const Supplier=require('../controllers/SupplierController.js');
+const Supplementry=require('../controllers/SupplementryController.js');
+const Cruise=require('../controllers/CruiseController.js');
+const Visa=require('../controllers/VisaController.js');
+const Tcs=require('../controllers/TcsController.js');
+const Onlinehotel=require('../controllers/OnlineHotelController.js');
+const Flights=require('../controllers/FlightsController.js');
 
 
 const authenticateToken = require("../middlewares/authenticateToken");
+
+
 
 
 const express = require('express');
@@ -315,5 +328,59 @@ router.get("/GetAcc",Accounts.getData);
 router.put('/update-acc/:account_id', Accounts.updateAcc);
 
 
+// Tea controllers   
+
+router.post("/Add-Tee",Tee.createTee);
+router.get('/tee', Tee.getAllTees);
+router.delete('/tee/:id', Tee.deleteTee);
+router.put('/tee/:id', Tee.updateTee);
+
+// Train Detailis
+router.post("/Train/:row_id",Train.addTrain);
+router.get("/Train",Train.getTrainDetails);
+router.delete("/Train/:row_id",Train.deleteTrain);
+
+
+
+// Suppliers Detailis
+router.post("/Supplier/:lead_id",Supplier.addSupplier);
+router.get("/Supplier",Supplier.getSuppliers);
+//router.delete("/Supplier/:lead_id",Train.deleteTrain);
+
+// Suppliers Detailis
+router.post("/supplimentry/:lead_id",Supplementry.addSupp);
+router.get("/supplimentry",Supplementry.getSuppl);
+//router.delete("/supplimentry/:lead_id",Supplementry.deleteTrain);
+
+// cruise Details
+router.post("/Cruise/:lead_id",Cruise.addCruise);
+router.get("/Cruise",Cruise.getCruise);
+
+
+// cruise Details
+router.post("/Visa/:lead_id",Visa.addVisa);
+router.get("/Visa",Visa.getVisa);
+
+// cruise Details
+router.post("/tcs/:lead_id",Tcs.addTcs);
+router.get("/tcs",Tcs.getTcs);
+
+// Buss Details
+router.post("/Addbus/:row_id",Buss.createBus);
+router.get("/getBuss",Buss.getAllBuses);
+
+
+// Online hotels 
+router.post("/online/:row_id",Onlinehotel.addOnlineHotels);
+router.post("/online",Onlinehotel.getOnlineHotels);
+
+// HOTELS
+router.post("/Flights/:row_id",Flights.addFlight);
+router.get("/Flights",Flights.getFlights);
+
+
+// Testing component is 
+router.post('/testingnow',Test.createTest);
+router.get('/testingnow',Test.getAllTests);
 
 module.exports = router;

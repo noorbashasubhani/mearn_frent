@@ -50,29 +50,6 @@ const transporter = nodemailer.createTransport({
 });
 
 
-
-app.post('/send-email', (req, res) => {
-  const { subject, text, to } = req.body;  // Extract subject, text, and to from the request body
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,  // Sender email from the environment variable
-    to: to,                       // Recipient email from the request body
-    subject: subject,             // Subject from the request body
-    text: text,                   // Body text from the request body
-  };
-
-  // Send the email using Nodemailer
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
-      console.log('Error sending email:', error);
-    } else {
-      console.log('Email sent:', info.response);
-    }
-  });
-});
-
-
-
 mongoose.connect(process.env.MONGO_URL)
   .then(() => {
     console.log("Successfully connected to MongoDB! .....................");
