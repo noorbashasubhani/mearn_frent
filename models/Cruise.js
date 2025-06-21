@@ -14,6 +14,10 @@ const cruiseSchema=new mongoose.Schema({
     no_of_ninghts:{type:String},
     no_of_adults:{type:Number},
     no_of_children:{type:Number},
+    selling_cities: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Destination'
+  }],
     no_of_cabin:{type:Number},
     total_cost:{type:Number},
     doc_id:{type:mongoose.Schema.Types.ObjectId,

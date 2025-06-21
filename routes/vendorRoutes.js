@@ -46,6 +46,20 @@ const Visa=require('../controllers/VisaController.js');
 const Tcs=require('../controllers/TcsController.js');
 const Onlinehotel=require('../controllers/OnlineHotelController.js');
 const Flights=require('../controllers/FlightsController.js');
+const Transport=require('../controllers/TransportController.js');
+const Day=require('../controllers/DayController.js');
+const Caluculation=require('../controllers/CaluculationController.js');
+const Message=require('../controllers/messageController.js');
+const FormPackDetail=require('../controllers/formPackDetailController.js');
+const theams=require('../controllers/themeController.js');
+//const FormIncExc=require('../controllers/formIncExcController.js');
+const formIncExcController=require('../controllers/formIncExcController');
+const DomesticHotel=require('../controllers/DomesticHotelController.js');
+const Google=require('../controllers/GoogleController.js');
+const Attendance=require('../controllers/AttendanceController.js');
+
+const ledgerController = require('../controllers/ledgerController');
+
 
 
 const authenticateToken = require("../middlewares/authenticateToken");
@@ -64,6 +78,8 @@ router.post("/Add-Dept", deparmentController.addDepartment);
 router.get("/Dept",deparmentController.getDepartments);
 router.post("/Add-Designations",designationController.addDesignation);
 router.get("/Desg",designationController.getDesignations);
+router.delete("/Dept/:id",deparmentController.deleteDepartment);
+router.delete("/Desg/:row_id",designationController.deleteDesingnation);
 
 // Designation detaisl
 router.get("/GroupDesinations",designationController.getGroupDesignations);
@@ -109,12 +125,20 @@ router.post("/Check-user",Users.userChecking);
 router.post("/User-Login",Users.userLogin);
 router.get("/Userlist",Users.userList);
 router.post("/Registration",Users.employeeRegistartions);
+router.put("/Registrations/:row_id",Users.updateEmployees);
 router.put("/Bank-Update/:row_id",Users.updateBank);
 router.get("/Birthdays",authenticateToken,Users.getbirthday);
 router.delete("/DelUser/:row_id",Users.delUser);
 router.get("/Pendinguser",Users.Pending_list);
 router.get("/Email-check/:email",Users.emailCheck);
 router.get("/Partners",Users.partnerList);
+router.get('/payroll/:month', Users.getPayrollData);
+router.post('/Addincentive/:id', Users.addInsentives);
+router.get('/GetInsentive/:month_year', Users.getInsentive);
+router.put('/ParrollApprove/:id', Users.approveIncentive);
+
+
+
 
 router.put("/Change-Password/:id",Users.changePassword);
 router.get("/test",Users.Test);
@@ -141,6 +165,9 @@ router.get("/Destination",Destination.getAllDestination);
 router.get("/Destination/:row_id",Destination.getSinglerowDestination);
 router.delete("/Destination/:row_id",Destination.deleteDestination);
 router.put("/Destination/:row_id",Destination.updateDestination);
+router.get("/Domestic-Destination",Destination.getDomesticDetsinations);
+router.get("/Cruise-Destination",Destination.getCruiseDestinations);
+router.get("/Cities",Destination.getCities);
 
 // bank details
 
@@ -197,7 +224,7 @@ router.put("/Taxe/:row_id",Taxes.updateTax);
 
 
 //  emp registration //
-router.post("/Registration",Registration.empRegistration);
+//router.post("/Registration",Registration.empRegistration);
 router.get("/Employee-Details/:user_id",Registration.getUserWithReference);
 router.get("/Employelist",Registration.empDetails);
 router.post("/Partner-Registration",Registration.parttRegistartions);
@@ -236,8 +263,9 @@ router.get("/Credit-Domestic-Note",Dcreditnote.getDomesticCredits);
 //router.delete("/Credit-Domestic-Note",Dcreditnote.deleteDestination);
 router.delete("/Credit-Domestic-Note/:row_id",Dcreditnote.deleteDomCredits);
 
+
 // Teams details
-router.post("/Teams",authenticateToken,Team.addTeam);
+router.post("/Teams/:user_id",Team.addTeam);
 router.get("/Teams",Team.getTeams);
 router.delete("/Teams/:row_id",Team.DelTeam);
 
@@ -312,9 +340,28 @@ router.get("/DaypreleadCount",lead.getpretotaldaywisecount);
 router.get("/Lead-Sources-list",lead.getLeadSourceHolidaySplit);
 router.get("/Lead-Search-list",lead.getSearchLeadsdetails);
 router.get("/Pending-Itenary",lead.getItenery);
+router.get("/Published-Itenary",lead.publisheItinery);
+router.get("/Modified-Itenray/:id",lead.getSelectedItinery);
+router.post('/duplicate/:doc_id', lead.duplicateDoc);
+router.put('/update-status-confirm/:id', lead.doConfirmStatus);
+router.get('/confirm', lead.getAllCofirmedItinery);
+router.get('/Cancelled', lead.getAllCancelledItinery);
+router.put('/cancel-itinerary/:id', lead.doCancelledStatus);
+router.put('/gift-voucher/:id', lead.giveGiftVoucher);
+router.get('/GIFT-LIST', lead.getGiftVochers);
+router.get('/comentleads-comments/:year/:executiveId', lead.getLeadsCommentsDetails);
+
+
+
+
+
 router.get("/Delete-Itenarylist",lead.getDeletedItenery);
 router.get("/All-Leads",lead.allLeads);
 router.put("/Customer-inf/:row_id",lead.customerinf);
+router.get("/QC-LIST",lead.getQcLeads);
+router.put("/update-status/:id",lead.doApprove);
+router.put("/update-status-reject/:id",lead.doRejects);
+router.put("/update-status-publish/:id",lead.doPublish);
 
 // Comments details
 router.post("/Comment",authenticateToken,Comment.addComment);
@@ -338,49 +385,169 @@ router.put('/tee/:id', Tee.updateTee);
 // Train Detailis
 router.post("/Train/:row_id",Train.addTrain);
 router.get("/Train",Train.getTrainDetails);
+router.get("/Train/:id",Train.getTrainDetailselected);
 router.delete("/Train/:row_id",Train.deleteTrain);
+router.put("/Train/:row_id",Train.editTrain);
 
 
 
 // Suppliers Detailis
-router.post("/Supplier/:lead_id",Supplier.addSupplier);
-router.get("/Supplier",Supplier.getSuppliers);
-//router.delete("/Supplier/:lead_id",Train.deleteTrain);
+
+router.post('/Supplier/:doc_id', Supplier.createSupplier);
+router.get('/Supplier/:doc_id', Supplier.getSuppliersByDocId);
+router.put('/Supplier/:id', Supplier.updateSupplier);
+router.delete('/Supplier/:id', Supplier.deleteSupplier);
+
 
 // Suppliers Detailis
 router.post("/supplimentry/:lead_id",Supplementry.addSupp);
 router.get("/supplimentry",Supplementry.getSuppl);
-//router.delete("/supplimentry/:lead_id",Supplementry.deleteTrain);
+router.get("/supplimentry/:id",Supplementry.getSupplsel);
+router.delete("/supplimentry/:row_id",Supplementry.delSupp);
+router.put("/supplimentry/:row_id",Supplementry.updateSup);
+
 
 // cruise Details
 router.post("/Cruise/:lead_id",Cruise.addCruise);
 router.get("/Cruise",Cruise.getCruise);
+router.get("/Cruise/:id",Cruise.getCruisesel);
+router.delete("/Cruise/:row_id",Cruise.delCruise);
+router.put("/Cruise/:row_id",Cruise.updateCruise);
 
 
 // cruise Details
-router.post("/Visa/:lead_id",Visa.addVisa);
-router.get("/Visa",Visa.getVisa);
+//router.post("/Visa/:lead_id",Visa.addVisa);
+//router.get("/Visa",Visa.getVisa);
+router.post('/Visa/:lead_id', Visa.addOrUpdateVisa);
+router.get("/Visa/:doc_id",Visa.getVisaById);
 
 // cruise Details
 router.post("/tcs/:lead_id",Tcs.addTcs);
-router.get("/tcs",Tcs.getTcs);
+router.get("/tcs/:lead_id",Tcs.getTcs);
 
 // Buss Details
 router.post("/Addbus/:row_id",Buss.createBus);
 router.get("/getBuss",Buss.getAllBuses);
+router.get("/getBussrel/:id",Buss.getAllBusesRelated);
+router.delete("/Delbus/:id",Buss.deleteBus);
+router.put("/Bus/:id",Buss.updateBus);
+//router.get("/getItenaryBus",Buss.getAllBusesRelated);
+
 
 
 // Online hotels 
 router.post("/online/:row_id",Onlinehotel.addOnlineHotels);
-router.post("/online",Onlinehotel.getOnlineHotels);
+router.get("/online",Onlinehotel.getOnlineHotels);
+router.get("/online/:id",Onlinehotel.getOnlineHotelsel);
+router.delete("/online/:row_id",Onlinehotel.delOnline);
+router.put("/online/:row_id",Onlinehotel.updateOnline);
 
 // HOTELS
 router.post("/Flights/:row_id",Flights.addFlight);
 router.get("/Flights",Flights.getFlights);
+router.get("/Flights/:id",Flights.getFlightById);
+router.delete("/Flights/:row_id",Flights.deleteFlight);
+router.put("/Flights/:row_id",Flights.updateFlights);
 
 
 // Testing component is 
 router.post('/testingnow',Test.createTest);
 router.get('/testingnow',Test.getAllTests);
+//router.delete('/testdel',Test.deleteTest);
+
+
+// Transpot details 
+router.post("/Transports/:lead_id",Transport.addTransport);
+router.get("/Transports",Transport.getTransport);
+router.get("/Transports/:id",Transport.getTransportsel);
+router.put("/Transports/:row_id",Transport.updateTrans);
+router.delete("/Transports/:row_id",Transport.delTransport);
+
+
+
+// Day details 
+router.post("/day/:lead_id",Day.addDay);
+router.get("/day",Day.getDauys);
+router.get("/day/:id",Day.getDauysel);
+router.delete("/day/:row_id",Day.delDay);
+router.put("/day/:row_id",Day.updateDay);
+
+
+
+// Caluculation detaiils
+
+router.post("/Cal/:row_id",Caluculation.addCalculation);
+router.get("/Cal",Caluculation.getCal);
+router.get("/Calsingle/:doc_id",Caluculation.getCalSingle);
+router.put("/Calup/:doc_id",Caluculation.updateCal);
+router.post('/CalSave/:id', Caluculation.createOrUpdateCal);
+
+
+// Message details here
+
+router.post('/Mess', Message.createMessage);
+router.get('/Mess', Message.getAllMessages);
+router.get('/Mess/:id', Message.getMessageById);
+router.delete('/Mess/:id', Message.deleteMessage);
+router.put('/Mess/:id', Message.updateMessage);
+
+
+
+// Package details :.
+router.post('/FormPack/:id', FormPackDetail.createFormPackDetail);
+router.get('/FormPack', FormPackDetail.getAllFormPackDetails);
+router.get('/FormPack/:id', FormPackDetail.getFormPackDetailById);
+router.put('/FormPack/:id', FormPackDetail.updateFormPackDetail);
+router.delete('/FormPack/:id', FormPackDetail.deleteFormPackDetail);
+
+
+
+// THeams details
+router.get('/Theams', theams.getAllThems);
+
+
+// Form Inclusions and exlusions
+router.post('/Form-inc/:id', formIncExcController.createOrUpdateFormIncExc);
+router.put('/Form-inc/:doc_id', formIncExcController.createOrUpdate);
+router.get('/Form-inc-All', formIncExcController.getFormAllIncExc);
+router.get('/Form-inc-All/:id', formIncExcController.getByDocId);
+
+
+// Domestic hotel DomesticHotel
+router.post('/Domestic-Hotel/:id', DomesticHotel.createHotelDetail);
+router.get('/Domestic-Hotel/:id', DomesticHotel.getHotelDetailsByDocId);
+router.delete('/Domestic-Hotel/:id', DomesticHotel.deleteHotelDetail);
+router.put('/Domestic-Hotel/:id', DomesticHotel.updateHotelDetail);
+
+
+// Total amount caluculation 
+router.get('/Cal/:doc_id', lead.getTotalAmountsByDocId);
+router.get('/Cal-INC/:doc_id', lead.getTotalAmountsByDocIdInt);
+
+
+// Total google details
+
+router.get('/Googel',Google.getAllReviews);
+router.post('/Googel',Google.addReview);
+router.get('/Googel/:doc_id',Google.getSelectCustomer);
+router.put('/Googel/:id',Google.updateReviewStatus);
+router.get('/All-Reviews', lead.leadwiseReviews);
+
+
+// Attendance 
+router.post('/Attendance',Attendance.addAttendance);
+router.get('/Attendance/:date',Attendance.getAttendanceByDate);
+//router.get('/attendance/by-user', Attendance.getAttendanceByUserAndMonth);
+router.get('/Attendance/:user_id/:month', Attendance.getAttendanceByUserAndMonth);
+
+
+
+router.post('/ledger', ledgerController.addLedger);
+router.get('/ledger', ledgerController.getAllLedgers);
+router.get('/ledger/:id', ledgerController.getLedgerById);
+router.put('/ledger/:id', ledgerController.updateLedger);
+router.delete('/ledger/:id', ledgerController.deleteLedger);
+
+
 
 module.exports = router;

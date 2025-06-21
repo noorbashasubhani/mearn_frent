@@ -54,7 +54,7 @@ exports.Airpordet = async (req, res) => {
     const airportList = await Airport.find();
 
     // Send the airport list in the response
-    res.status(200).json(airportList);
+    res.status(200).json({data:airportList});
   } catch (error) {
     console.error("Error fetching airports:", error);
 

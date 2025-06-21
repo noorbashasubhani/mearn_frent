@@ -27,10 +27,28 @@ exports.addFlight = async (req, res) => {
 // Get all flights
 exports.getFlights = async (req, res) => {
   try {
-    const flights = await Flight.find().populate({
-      path: 'doc_id',
-      select: 'name email' // adjust according to your Lead schema
-    });
+    const flights = await Flight.find()
+  .populate({
+    path: 'doc_id',
+    select: 'name email' // from Lead schema
+  })
+   .populate({
+    path: 'r_from_city',
+    select: 'airport_name airport_code' // from Airport schema
+  })
+   .populate({
+    path: 'r_to_city',
+    select: 'airport_name airport_code' // from Airport schema
+  })
+  .populate({
+    path: 'on_from_city',
+    select: 'airport_name airport_code' // from Airport schema
+  })
+  .populate({
+    path: 'on_to_city',
+    select: 'airport_name airport_code' // from Airport schema
+  });
+
 
     res.status(200).json({
       message: 'Flight data fetched successfully',
@@ -47,12 +65,12 @@ exports.getFlights = async (req, res) => {
 // Get flight by ID
 exports.getFlightById = async (req, res) => {
   try {
-    const flight = await Flight.findById(req.params.id).populate('doc_id');
+    const flight = await Flight.find({doc_id:req.params.id}).populate('doc_id');
     if (!flight) {
       return res.status(404).json({ message: 'Flight not found' });
     }
 
-    res.status(200).json(flight);
+    res.status(200).json({message:'success',data:flight});
   } catch (error) {
     res.status(500).json({
       message: 'Error fetching flight',
@@ -63,8 +81,9 @@ exports.getFlightById = async (req, res) => {
 
 // Delete flight by ID
 exports.deleteFlight = async (req, res) => {
+  const {row_id}=req.params;
   try {
-    const deleted = await Flight.findByIdAndDelete(req.params.id);
+    const deleted = await Flight.findByIdAndDelete(row_id);
     if (!deleted) {
       return res.status(404).json({ message: 'Flight not found' });
     }
@@ -77,3 +96,22 @@ exports.deleteFlight = async (req, res) => {
     });
   }
 };
+
+
+exports.updateFlights=async(req,res)=>{
+  const {row_id}=req.params;
+  const newData=req.body;
+   try{
+
+    const updata=await Flight.findByIdAndUpdate(row_id,newData,{new:true});
+    if(!updata){
+      return res.status(404).json({ message: 'Flight not found' });
+    }
+    return res.status(200).json({ message: 'Success',data:updata });
+   }catch(error){
+    res.status(500).json({
+      message: 'Error deleting flight',
+      error: error.message
+    });
+   }
+}

@@ -13,7 +13,7 @@ exports.addDesignation = async (req, res) => {
         // Save the new designation
         await designation.save();
         // Return the success response with the created designation
-        res.status(201).json({
+        res.status(200).json({
             message: "Designation added successfully",
             data:designation,
         });
@@ -31,7 +31,8 @@ exports.getDesignations = async (req, res) => {
   try {
     // Fetch all designations and populate the 'department' field with the department's name
     const designations = await Designation.find()
-      .populate("department", "name") // Populate 'department' field with 'name' of department
+      .populate("department", "name") // Populate 'department' field with 'name' of 
+       .sort({ _id: -1 })  
       .exec();
 
     // Return success response with populated data
@@ -83,5 +84,22 @@ exports.getGroupDesignations = async (req, res) => {
       message: "Something went wrong while fetching the designations",
       error: error.message,
     });
+  }
+};
+
+
+exports.deleteDesingnation = async (req, res) => {
+  const { row_id } = req.params; // ✅ Fixed from request.params to req.params
+
+  try {
+    const resData = await Designation.findByIdAndDelete(row_id);
+
+    if (!resData) {
+      return res.status(404).json({ message: 'Designation not found' });
+    }
+
+    res.status(200).json({ message: 'Deleted successfully', data: resData });
+  } catch (error) {
+    res.status(500).json({ message: 'Something went wrong', error: error.message });
   }
 };

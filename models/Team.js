@@ -9,6 +9,13 @@ const teamSchema = mongoose.Schema({
     dept_name:{
         type:String
     },
+    status:{
+        type:String,
+        default:'Y'
+    },
+    for_the_month:{
+       type:Date
+    },
     dept_head:{
         type: mongoose.Schema.Types.ObjectId, ref: "User"
     },

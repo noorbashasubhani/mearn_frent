@@ -56,7 +56,7 @@ exports.getComment = async (req, res) => {
           newmsg = "Moved To Deleted Leads";
           updatedLead = await Lead.findByIdAndUpdate(
             lead_id,
-            { lead_status: 'C' },
+            { lead_status: 'D' },
             { new: true }
           );
           break;
@@ -66,7 +66,7 @@ exports.getComment = async (req, res) => {
         case 'D':
           newmsg = "Move To Domestic";
           
-          const team = await Team.findOne();
+          const team = await Team.findOne({status:'Y',travel_type:'Domestic'});
           if (!team || !team.team_employees || team.team_employees.length === 0) {
             return res.status(400).json({ message: 'No team members available for assignment' });
           }
@@ -86,7 +86,7 @@ exports.getComment = async (req, res) => {
         case 'I':
           newmsg = "Move To International";
 
-          const teams = await Team.findOne();
+          const teams = await Team.findOne({status:'Y',travel_type:'International'});
           if (!teams || !teams.team_employees || teams.team_employees.length === 0) {
             return res.status(400).json({ message: 'No team members available for assignment' });
           }

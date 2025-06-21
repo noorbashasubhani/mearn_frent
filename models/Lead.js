@@ -106,18 +106,33 @@ const leadSchema = new mongoose.Schema(
     room_sharing_type:{
       type:String
     },
-    room_prefaring:{
-      type:String
-    },
+    room_prefaring: {
+    type: [String],
+    enum: [
+      'Beach-Front',
+      'Floor-Specific',
+      'Fort-Stay',
+      'Hill-View',
+      'Smoking-Room',
+      'Suite',
+      'Tent-Stay',
+      'Tree-House',
+      'Water-Villa'
+    ],
+    default: []
+  },
     no_of_rooms:{
       type:String
     },
     meals_plan:{
       type:String
     },
-    food_prefaring:{
-      type:String
-    },
+    food_prefaring: {
+    type: [String], // array of strings
+    enum: ['Beach-Front', 'Floor-Specific', 'Fort-Stay', 'Hill-View'],
+    default: []
+  },
+  ghrn_no:{type:String},
     accomdation_prefaring:{
       type:String
     },
@@ -146,6 +161,10 @@ const leadSchema = new mongoose.Schema(
       type:String
     },
     executive_changed_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+    qc_done_by: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
     },
@@ -178,6 +197,31 @@ const leadSchema = new mongoose.Schema(
       type: String
     },dinner:{
       type: String
+    },
+    confirmed_by:{
+       type: mongoose.Schema.Types.ObjectId,
+       ref: 'User',
+    },
+    cancelled_by:{
+       type: mongoose.Schema.Types.ObjectId,
+       ref: 'User',
+    },
+    cancelled_date:{
+       type: Date
+    },
+    gift_vocher_given:{
+       type: String,
+       ref: 'User',
+    },
+    gift_vocher_given_date:{
+       type: Date
+    },
+    gift_vocher_given_by:{
+      type: mongoose.Schema.Types.ObjectId,
+       ref: 'User',
+    },
+    confirmed_date:{
+       type: Date
     }
   },
   {

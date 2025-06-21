@@ -1,33 +1,46 @@
-const Supplier=require('../models/Supplier');
+const Supplier = require('../models/Supplier');
 
-exports.addSupplier=async(req,res)=>{
-    const {lead_id}=req.params;
-    try{
-    const supplierNew=new Supplier({
-            sup_mail:req.body.sup_mail,
-            sup_quote:req.body.sup_quote,
-            service:req.body.service,
-            destination:req.body.destination,
-            company_name:req.body.company_name,
-            contact_number:req.body.contact_number,
-            sup_currecny:req.body.sup_currecny,
-            currency_rate:req.body.currency_rate,
-            total_cost:req.body.total_cost,
-            cost_bifurication:req.body.cost_bifurication,
-            doc_id:lead_id
-    });
-    const list=await supplierNew.save();
-    res.status(200).json({message:'Data saved',list});
-    }catch(err){
-        res.status(500).json({message:'Data not saved'});
-    }
-}
+// Create or Update Supplier
+exports.createSupplier = async (req, res) => {
+  try {
+    const { doc_id } = req.params;
+    const newSupplier = new Supplier({ ...req.body, doc_id });
+    const saved = await newSupplier.save();
+    res.status(201).json({ message: 'Supplier saved', data: saved });
+  } catch (err) {
+    res.status(500).json({ message: 'Error saving supplier', error: err.message });
+  }
+};
 
-exports.getSuppliers=async(req,res)=>{
-     try{
-        const list=await Supplier.find();
-        res.status(200).json({message:'success',list});
-     }catch(error){
-        res.status(500).json({message:'Data not saved'});
-     }
-}
+// Get all suppliers by doc_id
+exports.getSuppliersByDocId = async (req, res) => {
+  try {
+    const { doc_id } = req.params;
+    const suppliers = await Supplier.find({ doc_id });
+    res.status(200).json({ data: suppliers });
+  } catch (err) {
+    res.status(500).json({ message: 'Error fetching suppliers', error: err.message });
+  }
+};
+
+// Update a supplier by ID
+exports.updateSupplier = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const updated = await Supplier.findByIdAndUpdate(id, req.body, { new: true });
+    res.status(200).json({ message: 'Supplier updated', data: updated });
+  } catch (err) {
+    res.status(500).json({ message: 'Error updating supplier', error: err.message });
+  }
+};
+
+// Delete a supplier by ID
+exports.deleteSupplier = async (req, res) => {
+  try {
+    const { id } = req.params;
+    await Supplier.findByIdAndDelete(id);
+    res.status(200).json({ message: 'Supplier deleted' });
+  } catch (err) {
+    res.status(500).json({ message: 'Error deleting supplier', error: err.message });
+  }
+};

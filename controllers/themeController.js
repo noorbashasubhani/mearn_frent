@@ -142,3 +142,62 @@ exports.getSingleThems = async (req, res) => {
         });
     }
 };
+
+
+
+exports.updateThems = (req, res) => {
+  // Handle image upload with multer
+  upload.single('imges')(req, res, async (err) => {
+    if (err) {
+      return res.status(400).json({
+        message: err.message,
+      });
+    }
+
+    const { row_id } = req.params;
+    const { destination_name, holiday_type, status } = req.body;
+
+    if (!destination_name || !holiday_type || !status) {
+      return res.status(400).json({
+        message: 'All fields (destination_name, holiday_type, status) are required!',
+      });
+    }
+
+    try {
+      let updateData = {
+        destination_name,
+        holiday_type,
+        status,
+      };
+
+      // If a new image file is uploaded, upload it to Cloudinary and update URL
+      if (req.file) {
+        const result = await cloudinary.uploader.upload(req.file.path, {
+          folder: 'thems',
+          resource_type: 'image',
+        });
+        updateData.imges = result.secure_url;
+      }
+
+      // Update Theam document by ID
+      const updatedTheam = await Thems.findByIdAndUpdate(row_id, updateData, {
+        new: true,
+      });
+
+      if (!updatedTheam) {
+        return res.status(404).json({ message: 'Theam not found' });
+      }
+
+      res.status(200).json({
+        message: 'Theam updated successfully',
+        data: updatedTheam,
+      });
+    } catch (error) {
+      console.error('Error updating Theam:', error);
+      res.status(500).json({
+        message: 'Something went wrong while updating the Theam',
+        error: error.message,
+      });
+    }
+  });
+};

@@ -1,6 +1,7 @@
 const mongoose=require('mongoose');
 
 const tcsSchema=new mongoose.Schema({
+ is_customer_paying_tcs:{type:String},   
  tcs_per:{type:String},
  tcs_amount:{type:Number},
  invoice:{type:String},

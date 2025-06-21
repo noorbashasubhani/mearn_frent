@@ -20,6 +20,7 @@ exports.addCruise=async(req,res)=>{
         no_of_children:req.body.no_of_children,
         no_of_cabin:req.body.no_of_cabin,
         total_cost:req.body.total_cost,
+        selling_cities: req.body.selling_cities, 
         doc_id:lead_id
     });
        
@@ -35,9 +36,43 @@ exports.addCruise=async(req,res)=>{
 
 exports.getCruise=async(req,res)=>{
  try{
-     const list=await Cruise.find();
-     res.status(500).json({message:'success',list}); 
+     const list=await Cruise.find().
+     populate({path: 'selling_cities',select: 'destination_name'});
+     res.status(200).json({message:'success',list}); 
  }catch(err){
     res.status(500).json({message:'error'});
  }
+}
+
+exports.getCruisesel=async(req,res)=>{
+ try{
+     const list=await Cruise.find({doc_id:req.params.id}).
+     populate({path: 'selling_cities',select: 'destination_name'});
+     res.status(200).json({message:'success',list}); 
+ }catch(err){
+    res.status(500).json({message:'error'});
+ }
+}
+
+
+
+exports.delCruise=async(req,res)=>{
+  const {row_id}=req.params;
+  try{
+     const delres=await Cruise.findByIdAndDelete(row_id);
+     res.status(200).json({message:'success'}); 
+  }catch(err){
+     res.status(500).json({message:'error'});
+  }
+}
+
+exports.updateCruise=async(req,res)=>{
+  const {row_id}=req.params;
+  const formData=req.body;
+  try{
+    const updatCrs=await Cruise.findByIdAndUpdate(row_id,formData,{new:true});
+   res.status(200).json({message:'success'}); 
+  }catch(err){
+   res.status(500).json({message:'error'});
+  }
 }

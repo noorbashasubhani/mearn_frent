@@ -25,7 +25,7 @@ exports.AddHotel = async (req,res) => {
 exports.HotelList = async (req,res) => {
    try{
     const list = await Hotel.find();
-    res.status(200).json(list);
+    res.status(200).json({message:"Success",data:list});
    }catch(error){
     res.status(500).json({message:"Something went wrong"});
    }

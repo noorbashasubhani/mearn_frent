@@ -7,7 +7,7 @@ const Bank = require("../models/Bank");
 exports.getBank = async (req,res) =>{
   try{
    const list = await Bank.find(); 
-   res.status(200).json(list);
+   res.status(200).json({ message: "success", data: list });
   }catch(error){
     res.status(500).json({ message: "Something went wrong", error: error.message });
   }

@@ -37,6 +37,22 @@ const getAllBuses = async (req, res) => {
   }
 };
 
+// Get all bus records
+const getAllBusesRelated = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const buses = await Buse.find({ doc_id: id }); // ✅ find() with filter object
+    res.status(200).json({message:'success',data:buses});
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching bus records",
+      error: error.message
+    });
+  }
+};
+
+
 // Get a bus record by ID
 const getBusById = async (req, res) => {
   try {
@@ -85,5 +101,6 @@ module.exports = {
   getAllBuses,
   getBusById,
   updateBus,
-  deleteBus
+  deleteBus,
+  getAllBusesRelated
 };

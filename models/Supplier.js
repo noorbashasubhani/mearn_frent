@@ -10,6 +10,7 @@ const suppllierSchema=new mongoose.Schema({
     sup_currecny:{type:String},
     currency_rate:{type:Number},
     total_cost:{type:Number},
+    total_cost_consider:{type:Number},
     cost_bifurication:{type:String},
     doc_id:{type:mongoose.Schema.Types.ObjectId,
         ref:'Lead'

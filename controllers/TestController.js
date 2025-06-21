@@ -31,20 +31,27 @@ const createTest = async (req, res) => {
 
 // Get all employees
 const getAllTests = async (req, res) => {
-    try {
 
-        const tests = await Test.find({
-          $or:[
-            {salary:{$gt:5000,$lt:50000}},
-            {department:'IT'},
-            {department:'HR'}
-          ]
-        })
+  try {
+      const tests = await Test.aggregate([
+        {
+          $group: {
+            _id: {department:"$department",desinations:'$designation'},
+            totalEmployees: { $sum: 1 },
+          }
+        },
+        {
+          $match:{
+           totalEmployees: { $gte : 2 }, 
+          }
+        }
+      ])
+      
+      res.status(200).json(tests);
+  } catch (error) {
+      res.status(500).json({ message: "Error fetching data", error: error.message });
+  }
 
-        res.status(200).json(tests);
-    } catch (error) {
-        res.status(500).json({ message: "Error fetching data", error: error.message });
-    }
 };
 
 
@@ -91,7 +98,7 @@ const updateTest = async (req, res) => {
 // Delete an employee
 const deleteTest = async (req, res) => {
   try {
-    const test = await Test.findByIdAndDelete(req.params.id);
+    const test = await Test.deleteMany({});
     if (!test) return res.status(404).json({ message: "Employee not found" });
     res.status(200).json({ message: "Employee deleted" });
   } catch (error) {

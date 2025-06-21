@@ -17,6 +17,7 @@ router.get("/Flyercloudes",flyerController.getFlyersCloude);
 router.post("/Thems",Theam.addThems);
 router.get("/Thems",Theam.getAllThems);
 router.get("/Thems/:row_id",Theam.getSingleThems);
+router.put("/Thems/:row_id",Theam.updateThems);
 
 
 

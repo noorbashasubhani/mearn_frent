@@ -2,7 +2,12 @@
 
 const User = require('../models/User'); // Assuming the User model is defined here
 const jwt = require('jsonwebtoken');  
-const bcrypt = require('bcryptjs'); 
+const bcrypt = require('bcryptjs');
+const Department=require('../models/Department');
+const Attendance = require('../models/Attendance');
+//const Incentive=rquire('../models/Incentive.js');
+const Incentives=require('../models/Incentive');
+
 
 
 exports.userChecking = async (req, res) => {
@@ -90,16 +95,15 @@ exports.userLogin = async (req, res) => {
 
 exports.userList = async (req, res) => {
   try {
-    // Fetch all users from the database
-    const list = await User.find();
-
-    // Return a success response with the user list
-    res.status(200).json(list);
+    const list = await User.find().
+    populate('designation_id','name').
+    populate('department_id', 'name');
+    res.status(200).json({
+      message: "Success",
+      data: list, // Include error message for debugging
+    });
   } catch (error) {
-    // Log the error for debugging purposes
     console.error("Error fetching users: ", error);
-
-    // Send a detailed error response
     res.status(500).json({
       message: "Unable to fetch data",
       error: error.message, // Include error message for debugging
@@ -112,13 +116,15 @@ exports.getUserId = async (req, res) => {
     const { user_id } = req.params; // Get user_id from request parameters
     try {
         // Find a single user by _id
-        const singleUser = await User.findOne({ _id: user_id });
+        const singleUser = await User.findOne({ _id: user_id }).
+        populate('designation_id','name').
+        populate('department_id', 'name');
         // If the user is not found, send a 404 error with a message
         if (!singleUser) {
             return res.status(404).json({ message: 'User not found' });
         }
         // If user is found, return the user details in the response
-        res.status(200).json(singleUser);
+        res.status(200).json({data:singleUser});
     } catch (error) {
         // If there was an error during the database operation, send a 500 error
         console.error('Error fetching user:', error);
@@ -228,7 +234,11 @@ exports.employeeRegistartions = async (req, res) => {
     // Hash the password before saving
     const hashedPassword = await bcrypt.hash(password, 10);
     // Fetch the last user to generate a dynamic Empcode
-    const latestUser = await User.findOne().sort({ employee_id: -1 }); // Sort by employee_id in descending order
+    //const latestUser = await User.findOne().sort({ employee_id: -1 }); // Sort by employee_id in descending order
+
+    const latestUser = await User.findOne({ employee_id: { $exists: true, $ne: "" } }).sort({ employee_id: -1 });
+
+
     let newEmpcode;
     if (latestUser) {
       // If there are users, generate the next Empcode by incrementing the last one
@@ -241,7 +251,7 @@ exports.employeeRegistartions = async (req, res) => {
     }
     // Create new user with the provided details and the dynamically generated Empcode
     const newData = new User({
-      first_name, last_name, email, password: hashedPassword, gender,
+      first_name, last_name, email, password: hashedPassword, gender,code:newEmpcode,
       fathername, mothername, fathername_no, mothername_no,
       date_of_birthday, mobile_no, department_id, designation_id, castname,
       address, user_type,status, pan_number, are_you_fresher, previous_company,
@@ -267,6 +277,20 @@ exports.employeeRegistartions = async (req, res) => {
   }
 };
 
+exports.updateEmployees = async (req, res) => {
+  
+  const { row_id } = req.params; // Get employee ID from route
+   const UPDS = { ...req.body };
+  try {
+   // const user = await User.findById(row_id);
+    //if (!user) {return res.status(404).json({ message: 'User not found' });}
+    const updatedUser = await User.findByIdAndUpdate(row_id,UPDS,{ new: true });
+    res.status(200).json({message: 'Employee updated successfully!',user: updatedUser});
+  } catch (error) {
+    res.status(500).json({message: 'Failed to update employee',error: error.message});
+  }
+
+};
 
 
 exports.updateBank = async (req, res) => {
@@ -375,3 +399,215 @@ exports.partnerList=async(req,res)=>{
     res.status(500).json({message:"eroor",error});
   }
 }
+
+
+
+
+exports.getPayrollData = async (req, res) => {
+  try {
+    const { month } = req.params;
+    const [year, rawMonth] = month.split('-');
+    const monthIndex = parseInt(rawMonth, 10);
+
+    const total_month_days = new Date(year, monthIndex, 0).getDate();
+    const startDate = new Date(year, monthIndex - 1, 1);
+    const endDate = new Date(year, monthIndex, 1);
+    const month_year = `${year}-${rawMonth}`; // e.g. "2025-06"
+
+    const users = await User.find();
+
+    const data = await Promise.all(users.map(async user => {
+      const attendanceRecords = await Attendance.find({
+        user_id: user._id,
+        date: { $gte: startDate, $lt: endDate }
+      });
+
+      let countP = 0, countC = 0, countH = 0, countL = 0, countO = 0;
+
+      attendanceRecords.forEach(rec => {
+        switch (rec.attendance_status) {
+          case 'P': countP++; break;
+          case 'C': countC++; break;
+          case 'H': countH++; break;
+          case 'L': countL++; break;
+          case 'O': countO++; break;
+        }
+      });
+
+      const countA = total_month_days - (countP + countC + countH + countL + countO);
+      const working_days = countP + countC + (countH * 0.5) + countO;
+      const unpaid_days = countH * 0.5 + countL;
+
+      const annual_salary = user.salary || 0;
+      const monthly_salary = annual_salary / 12;
+      const ctc_per_day = +(monthly_salary / total_month_days).toFixed(2);
+      const present_salary = +(working_days * ctc_per_day).toFixed(2);
+
+      // Default values
+      let prof_tax = 0;
+      if (monthly_salary > 20000) prof_tax = 200;
+      else if (monthly_salary > 15000) prof_tax = 150;
+
+      let advance = 0;
+      let pf_deduction = 0;
+      let other_deduction = 0;
+      let incentives = 0;
+      let accident_insurance = 0;
+      let payslop_status = 'Pending';
+
+      // ✅ Fetch Incentive data if exists
+      const incentive = await Incentives.findOne({ emp_id: user._id, month_year });
+
+      if (incentive) {
+        advance = incentive.advance || 0;
+        pf_deduction = incentive.pf_deduction || 0;
+        other_deduction = incentive.other_deduction || 0;
+        incentives = incentive.incentives || 0;
+        accident_insurance = incentive.accident_insurance || 0;
+        prof_tax = incentive.prof_tax || prof_tax; // override default if provided
+        payslop_status = incentive.payslop_status || 'Pending';
+        ins_id=incentive._id;
+        issuanceDate=incentive.issuanceDate;
+        modeOfPay=incentive.modeOfPay;
+        finaly_paid=incentive.finaly_paid;
+        payslop_status=incentive.payslop_status;
+      }
+
+      const final_pay = +(
+        present_salary - prof_tax - advance - pf_deduction - other_deduction + incentives + accident_insurance
+      ).toFixed(2);
+
+      return {
+        name: `${user.first_name} ${user.last_name}`,
+        emp_id: user._id,
+        total_days: total_month_days,
+        count_present: countP,
+        count_casual: countC,
+        count_halfday: countH,
+        count_lop: countL,
+        count_holiday: countO,
+        count_absent: countA,
+        working_days,
+        ctc_per_day,
+        ctc_per_month: +monthly_salary.toFixed(2),
+        present_salary,
+        prof_tax,
+        advance,
+        pf_deduction,
+        other_deduction,
+        incentives,
+        accident_insurance,
+        final_pay,
+        paid_leave: working_days,
+        unpaid_leave: unpaid_days,
+        payslop_status,
+        insent_id:ins_id,
+        issuanceDate:issuanceDate,
+        modeOfPay:modeOfPay,
+        payslop_status:payslop_status,
+        finaly_paid:finaly_paid
+      };
+    }));
+
+    res.json({ success: true, data });
+
+  } catch (error) {
+    console.error('Payroll error:', error);
+    res.status(500).json({ success: false, message: 'Internal server error' });
+  }
+};
+
+
+
+exports.addInsentives = async (req, res) => {
+  const emp_id = req.params.id;
+  const {
+    incentives,
+    advance,
+    other_deduction,
+    pf_deduction,
+    prof_tax,
+    accident_insurance,
+    month_year
+  } = req.body;
+
+  try {
+    // Check if record already exists for that emp_id and month_year
+    let record = await Incentives.findOne({ emp_id, month_year });
+
+    if (record) {
+      // Update existing record
+      record.incentives = incentives || 0;
+      record.advance = advance || 0;
+      record.other_deduction = other_deduction || 0;
+      record.pf_deduction = pf_deduction || 0;
+      record.prof_tax = prof_tax || 0;
+      record.accident_insurance = accident_insurance || 0;
+
+      await record.save();
+      return res.json({ success: true, message: 'Incentive updated successfully', data: record });
+    }
+
+    // Create new incentive record
+    const newRecord = new Incentives({
+      emp_id,
+      month_year,
+      incentives: incentives || 0,
+      advance: advance || 0,
+      other_deduction: other_deduction || 0,
+      pf_deduction: pf_deduction || 0,
+      prof_tax: prof_tax || 0,
+      accident_insurance: accident_insurance || 0,
+      payslop_status: 'Pending'
+    });
+
+    await newRecord.save();
+    return res.json({ success: true, message: 'Incentive added successfully', data: newRecord });
+
+  } catch (error) {
+    console.error('Error saving incentive:', error);
+    return res.status(500).json({ success: false, message: 'Server error while saving incentive' });
+  }
+};
+
+
+exports.getInsentive = async (req, res) => {
+  try {
+    const { month_year } = req.params;
+
+    let query = {};
+    if (month_year) {
+      query.month_year = month_year; // filter by month if provided
+    }
+
+    const data = await Incentives.find(query)
+      .populate('emp_id', 'name email') // populate employee info
+      .sort({ created_at: -1 }); // optional: latest first
+
+    res.json({ success: true, data });
+  } catch (err) {
+    console.error('Error fetching incentives:', err);
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+
+exports.approveIncentive = async (req, res) => {
+ try {
+    const { id } = req.params;
+    const update = {
+      issuanceDate: req.body.issuanceDate,
+      modeOfPay: req.body.modeOfPay,
+      finaly_paid: req.body.final_pay,
+      payslop_status: req.body.payslop_status
+    };
+
+    const updated = await Incentives.findByIdAndUpdate(id, update, { new: true });
+
+    if (!updated) return res.status(404).json({ success: false, message: 'Incentive not found' });
+
+    res.json({ success: true, data: updated });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};

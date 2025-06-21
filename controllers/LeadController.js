@@ -3,6 +3,186 @@ const Lead = require('../models/Lead');
 const Team = require('../models/Team');
 const User = require('../models/User'); // Ensure the User model is required if needed
 
+//const mongoose = require('mongoose');
+const Flight = require('../models/Flight');
+const Cruise = require('../models/Cruise');
+const Train = require('../models/Train');
+const Bus = require('../models/Buse');
+
+const Supplementary = require('../models/Supplementry'); // corrected spelling
+
+const Transport = require('../models/Transport');
+const OnlineHotel = require('../models/Onlinehotel');
+const DomesticHotel = require('../models/DomesticHotel');
+const Supplier=require('../models/Supplier');
+const Visa=require('../models/Visa');
+
+const Tcs=require('../models/Tcs');
+const Day=require('../models/Day');
+const IncDec=require('../models/FormIncExc');
+const Caluculation=require('../models/Caluculation');
+//const Package=require('../models/FormPackDetails');
+const FormPackDetail=require('../models/FormPackDetail');
+const Google=require('../models/Google.js');
+const Comment=require('../models/Comment.js');
+
+
+
+
+
+
+exports.getTotalAmountsByDocId = async (req, res) => {
+  const { doc_id } = req.params;
+  const docObjectId = new mongoose.Types.ObjectId(doc_id);
+
+
+  try {
+    const [flightTotal] = await Flight.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_flight_cost" } } }
+    ]);
+
+    const [cruiseTotal] = await Cruise.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [transportTotal] = await Transport.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [domesticHotelTotal] = await DomesticHotel.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$final_cost" } } }
+    ]);
+
+    const [supplementaryTotal] = await Supplementary.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$supp_cost" } } }
+    ]);
+
+    const [onlineHotelTotal] = await OnlineHotel.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [trainTotal] = await Train.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [busTotal] = await Bus.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_bus_fare" } } }
+    ]);
+
+    res.json({
+      total_flight_cost: flightTotal?.total || 0,
+      total_cruise_cost: cruiseTotal?.total || 0,
+      total_train_cost: trainTotal?.total || 0,
+      total_bus_cost: busTotal?.total || 0,
+      transport_cost: transportTotal?.total || 0,
+      online_hotel_cost: onlineHotelTotal?.total || 0,
+      domestic_hotel_cost: domesticHotelTotal?.total || 0,
+      supplementary_cost: supplementaryTotal?.total || 0,
+      total_land:
+      (transportTotal?.total || 0) +
+      (onlineHotelTotal?.total || 0) +
+      (domesticHotelTotal?.total || 0) +
+      (supplementaryTotal?.total || 0)
+    });
+
+  } catch (err) {
+    console.error('Error getting totals:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+exports.getTotalAmountsByDocIdInt = async (req, res) => {
+  const { doc_id } = req.params;
+  const docObjectId = new mongoose.Types.ObjectId(doc_id);
+
+
+  try {
+    const [flightTotal] = await Flight.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_flight_cost" } } }
+    ]);
+
+    const [cruiseTotal] = await Cruise.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [transportTotal] = await Transport.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [domesticHotelTotal] = await DomesticHotel.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$final_cost" } } }
+    ]);
+
+    const [supplementaryTotal] = await Supplementary.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$supp_cost" } } }
+    ]);
+
+    const [onlineHotelTotal] = await OnlineHotel.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [trainTotal] = await Train.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+
+    const [busTotal] = await Bus.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_bus_fare" } } }
+    ]);
+
+     const [SuppTotal] = await Supplier.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost_consider" } } }
+    ]);
+     const [VisaTotal] = await Visa.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$total_cost" } } }
+    ]);
+     const [TcsTotal] = await Tcs.aggregate([
+      { $match: { doc_id: docObjectId } },
+      { $group: { _id: null, total: { $sum: "$tcs_amount" } } }
+    ]);
+
+    res.json({
+      total_visa_cost: VisaTotal?.total || 0,
+      total_tcs_cost: TcsTotal?.total || 0,
+      total_flight_cost: flightTotal?.total || 0,
+      total_cruise_cost: cruiseTotal?.total || 0,
+      total_train_cost: trainTotal?.total || 0,
+      total_bus_cost: busTotal?.total || 0,
+      transport_cost: transportTotal?.total || 0,
+      online_hotel_cost: onlineHotelTotal?.total || 0,
+      domestic_hotel_cost: domesticHotelTotal?.total || 0,
+      supplementary_cost: supplementaryTotal?.total || 0,
+      supplier_total: SuppTotal?.total || 0,
+      total_land:
+      (SuppTotal?.total || 0) +
+      (onlineHotelTotal?.total || 0) +
+      (supplementaryTotal?.total || 0)
+    });
+
+  } catch (err) {
+    console.error('Error getting totals:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
 
 exports.addLead = async (req, res) => {
   const {
@@ -22,7 +202,7 @@ exports.addLead = async (req, res) => {
 
   try {
     // Fetch the team based on the holiday_type (i.e., travel_type)
-    const team = await Team.findOne({ travel_type: holiday_type }); // Use findOne to fetch a single team
+    const team = await Team.findOne({ travel_type: holiday_type, status:'Y' }); // Use findOne to fetch a single team
     if (!team) {
       return res.status(400).json({ message: 'Team not found for the specified holiday type.' });
     }
@@ -99,7 +279,11 @@ exports.addLead = async (req, res) => {
 exports.getLeadsdetails = async (req, res) => {
   const {lead_id}=req.params;
   try {
-    const responses = await Lead.findById(lead_id);
+    const responses = await Lead.findById(lead_id)
+   .populate({
+  path: 'holiday_destination',
+  select: 'destination_name' // only fetch name and location fields
+});
     res.status(200).json({ message: 'Leads fetched successfully its', data: responses });
   } catch (err) {
     // Error handling
@@ -136,12 +320,16 @@ exports.getLead = async (req, res) => {
 
 exports.getItenery = async (req, res) => {
   try {
-    const responses = await Lead.find({lead_status:'I',itenary_status:'P'})
+    const responses = await Lead.find({
+  lead_status: 'I',
+  itenary_status: { $in: ['A', 'R', 'P'] }
+  })
   .populate("raised_by", "first_name last_name") // Populating raised_by with first_name and last_name
   .populate("operation_executive", "first_name last_name") // Populating operation_executive with first_name and last_name
   .populate("my_operation_executive", "first_name last_name") // Populating my_operation_executive with first_name and last_name
   .populate("partner_id", "first_name last_name") // Populating partner_id with first_name and last_name
   .populate("executive_changed_by", "first_name last_name") // Populating executive_changed_by with first_name and last_name
+  .populate("qc_done_by", "first_name last_name")
   .populate("previous_operation_executive", "first_name last_name");
     res.status(200).json({ message: 'Leads fetched successfully', data: responses });
   } catch (err) {
@@ -170,36 +358,45 @@ exports.update=async(req,res)=>{
 }
 
 
-exports.updateAssign=async(req,res)=>{
-  const {operation_executive,reason}=req.body;
-  const {row_id}=req.params;
+exports.updateAssign = async (req, res) => {
+  const { operation_executive, reason, executive } = req.body;
+  const { row_id } = req.params;
   const user_id = req.user.userId;
-  try{
-      const updatedLead = await Lead.findByIdAndUpdate(
-          row_id, // The ID of the lead you want to update
-          { operation_executive:operation_executive,reason:reason,executive_changed_by:user_id }, // The fields you want to update
-          { new: true } // Return the updated lead
-        );
-        if (!updatedLead) {
-          return res.status(404).json({ message: 'Lead not found' });
-        }
 
+  try {
+    const updatedLead = await Lead.findByIdAndUpdate(
+      row_id,
+      {
+        operation_executive,
+        reason,
+        executive_changed_by: user_id,
+        previous_operation_executive: executive,
+      },
+      { new: true }
+    );
 
-        const populatedLead = await Lead.findById(updatedLead._id)
-        .populate("raised_by", "first_name last_name")
-        .populate("operation_executive", "first_name last_name")
-        .populate("my_operation_executive", "first_name last_name")
-        .populate("partner_id", "first_name last_name")
-        .populate("previous_operation_executive", "first_name last_name")
-        .populate("executive_changed_by", "first_name last_name");
+    if (!updatedLead) {
+      return res.status(404).json({ message: 'Lead not found' });
+    }
 
+    const populatedLead = await Lead.findById(updatedLead._id)
+      .populate("raised_by", "first_name last_name")
+      .populate("operation_executive", "first_name last_name")
+      .populate("my_operation_executive", "first_name last_name")
+      .populate("partner_id", "first_name last_name")
+      .populate("previous_operation_executive", "first_name last_name")
+      .populate("executive_changed_by", "first_name last_name");
 
+    res.status(200).json({
+      message: 'Leads Assigned successfully',
+      data: populatedLead,
+    });
 
-      res.status(200).json({ message: 'Leads Assigned successfully', data: populatedLead });
-  }catch(err){
-      res.status(500).json({ message: 'Error occurred', error: err.message }); 
+  } catch (err) {
+    res.status(500).json({ message: 'Error occurred', error: err.message });
   }
-}
+};
+
 
 
 exports.getLeadRnr = async (req, res) => {
@@ -246,35 +443,52 @@ exports.processed = async (req, res) => {
     preferred_time, customer_location, start_city, holiday_destination, visiting_city, start_date, end_date, duration,
     no_of_adults, no_of_children, no_of_infants, no_of_pax, transformation_mode, trans_from_city, trans_to_city,
     hotel_standed, hotel_type, room_sharing_type, room_prefaring, no_of_rooms, meals_plan, food_prefaring,
-    accomdation_prefaring, meals_prefaring, sight_prefaring, special_includes, do_you_want, your_inputs,proceesed_by,emi_amount
-    ,budget_amount,visa,ticket,honey,day_break,insurance,early,activity,chekcout,guide,dinner
+    accomdation_prefaring, meals_prefaring, sight_prefaring, special_includes, do_you_want, your_inputs,
+    proceesed_by, emi_amount, budget_amount, visa, ticket, honey, day_break, insurance, early, activity, chekcout, guide, dinner
   } = req.body;
 
   const user_id = req.user.userId;
   const { lead_id } = req.params;
 
+  // ✅ Generate new ghrn_no
+  let new_ghrn_no = '';
+  try {
+    const lastLead = await Lead.findOne({ ghrn_no: { $regex: /^GHRN\d+$/ } })
+      .sort({ ghrn_no: -1 }) // Sort descending by ghrn_no
+      .lean();
 
+    if (lastLead && lastLead.ghrn_no) {
+      const lastNumber = parseInt(lastLead.ghrn_no.replace('GHRN', '')) || 0;
+      new_ghrn_no = `GHRN${lastNumber + 1}`;
+    } else {
+      new_ghrn_no = 'GHRN10001'; // Starting value if none exists
+    }
+  } catch (err) {
+    return res.status(500).json({ message: 'Failed to generate GHRN number', error: err.message });
+  }
 
   const updateData = {
     customer_name, customer_number, customer_email, holiday_type, lead_source, package_type, customer_type,
     preferred_time, customer_location, start_city, holiday_destination, visiting_city, start_date, end_date, duration,
     no_of_adults, no_of_children, no_of_infants, no_of_pax, transformation_mode, trans_from_city, trans_to_city,
-    hotel_standed, hotel_type, room_sharing_type, room_prefaring, no_of_rooms, meals_plan, food_prefaring,proceesed_by:user_id,
-    accomdation_prefaring, meals_prefaring, sight_prefaring, special_includes, do_you_want, your_inputs,lead_status:'I',emi_amount
-    ,budget_amount,visa,ticket,honey,day_break,insurance,early,activity,chekcout,guide,dinner,itenary_status:'P'
+    hotel_standed, hotel_type, room_sharing_type, room_prefaring, no_of_rooms, meals_plan, food_prefaring,
+    accomdation_prefaring, meals_prefaring, sight_prefaring, special_includes, do_you_want, your_inputs,
+    proceesed_by: user_id, emi_amount, budget_amount, visa, ticket, honey, day_break, insurance,
+    early, activity, chekcout, guide, dinner,
+    lead_status: 'I',
+    itenary_status: 'P',
+    ghrn_no: new_ghrn_no,
   };
 
   if (partner_id && mongoose.Types.ObjectId.isValid(partner_id)) {
     updateData.partner_id = partner_id;
   }
-  
-  
-  
+
   try {
     const result = await Lead.findByIdAndUpdate(
       lead_id,
       updateData,
-      { new: true } // Option to return the updated document
+      { new: true }
     );
     if (result) {
       res.status(200).json({ message: 'Lead updated successfully', data: result });
@@ -569,3 +783,403 @@ exports.customerinf = async (req, res) => {
     res.status(500).json({ message: 'Error occurred', error: err.message });
   }
 };
+
+
+exports.getQcLeads=async(req,res)=>{
+ try{
+  const list =await Lead.find({itenary_status:'Q'}).
+  populate({path:'operation_executive',select:'first_name last_name'}).
+  populate({path:'holiday_destination',select:'destination_name'});
+  
+    res.status(200).json({message:'success',data:list});
+
+ }catch(err){
+    res.status(500).json({message:'Not coming',error:err.message});
+ }
+}
+
+
+exports.doApprove=async(req,res)=>{
+  const {id}=req.params;
+  const {itenary_status,qc_done_by}=req.body;
+  try{
+  const res = await Lead.findByIdAndUpdate(
+  id,
+  { itenary_status: itenary_status,qc_done_by:qc_done_by},
+  { new: true }
+  );
+  res.status(200).json({message:'success'});
+  }catch(err){
+     res.status(500).json({message:'Not coming',error:err.message});
+  }
+}
+
+exports.doRejects=async(req,res)=>{
+  try{
+  const res = await Lead.findByIdAndUpdate( req.params.id,{ itenary_status: 'A' },{ new: true });
+  res.status(200).json({message:'success'});
+  }catch(err){
+     res.status(500).json({message:'Not coming',error:err.message});
+  }
+}
+
+exports.doPublish=async(req,res)=>{
+  try{
+  const res = await Lead.findByIdAndUpdate( req.params.id,{ itenary_status: 'L' },{ new: true });
+  res.status(200).json({message:'success'});
+  }catch(err){
+     res.status(500).json({message:'Not coming',error:err.message});
+  }
+}
+
+exports.publisheItinery=async(req,res)=>{
+  try{
+    const resd = await Lead.find({ itenary_status: 'L' }).
+    populate({path:'operation_executive',select:'first_name last_name'}).
+    populate({path:'holiday_destination',select:'destination_name'});
+    res.status(200).json({message:'success',data:resd});
+  }catch(err){
+    res.status(500).json({message:'Not coming',error:err.message});
+  }
+}
+
+exports.getSelectedItinery=async(req,res)=>{
+  try{
+    const resd = await Lead.find({ghrn_no:req.params.id}).
+    populate({path:'operation_executive',select:'first_name last_name'}).
+    populate({path:'holiday_destination',select:'destination_name'}).
+    populate({path:'qc_done_by',select:'first_name'});
+    res.status(200).json({message:'success',data:resd});
+  }catch(err){
+    res.status(500).json({message:'Not coming',error:err.message});
+  }
+}
+
+
+
+exports.duplicateDoc = async (req, res) => {
+  const { doc_id } = req.params;
+
+  try {
+    // Step 1: Duplicate the main document
+    const originalDoc = await Lead.findById(doc_id);
+    if (!originalDoc) return res.status(404).json({ message: 'Document not found' });
+
+    const newDocData = originalDoc.toObject();
+    delete newDocData._id;
+    delete newDocData.createdAt;
+    delete newDocData.updatedAt;
+
+    const duplicatedDoc = await Lead.create(newDocData);
+    const newDocId = duplicatedDoc._id;
+
+    // Step 2: Utility to duplicate related documents
+    const duplicateRelated = async (Model) => {
+      const relatedDocs = await Model.find({ doc_id });
+      if (!relatedDocs.length) return;
+
+      const newDocs = relatedDocs.map(doc => {
+        const data = doc.toObject();
+        delete data._id;
+        delete data.createdAt;
+        delete data.updatedAt;
+        data.doc_id = newDocId;
+        return data;
+      });
+
+      await Model.insertMany(newDocs);
+    };
+
+    // Step 3: Apply to all related collections
+    const relatedModels = [
+      Flight, Cruise, Train, Bus, Supplementary, Transport,
+      OnlineHotel, DomesticHotel, Supplier, Visa,
+      Tcs, Day, IncDec, Caluculation, FormPackDetail
+    ];
+
+    for (const model of relatedModels) {
+      await duplicateRelated(model);
+    }
+
+    res.status(201).json({ message: 'Duplicated main & related docs', new_doc_id: newDocId });
+  } catch (error) {
+    console.error('Duplication error:', error);
+    res.status(500).json({ message: 'Duplication failed', error: error.message });
+  }
+};
+
+
+
+exports.doConfirmStatus = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body; // 👈 You'll pass this from frontend
+
+  try {
+    const updated = await Lead.findByIdAndUpdate(
+      id,
+      {
+        itenary_status: 'C',
+        confirmed_by: userId,
+        confirmed_date: new Date(),
+      },
+      { new: true }
+    );
+
+    if (!updated) return res.status(404).json({ message: 'Document not found' });
+
+    res.status(200).json({ message: 'Confirmed successfully', data: updated });
+  } catch (err) {
+    res.status(500).json({ message: 'Error confirming itinerary', error: err.message });
+  }
+};
+
+
+exports.getAllCofirmedItinery = async (req, res) => {
+  try {
+    const leads = await Lead.find({ itenary_status: 'C' })
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .populate('qc_done_by', 'first_name');
+    const leadIds = leads.map(lead => lead._id);
+    const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
+    // Match calculation to each lead
+    const enrichedLeads = leads.map(lead => {
+      const calc = calculations.find(c => c.doc_id.toString() === lead._id.toString());
+      return {
+        ...lead.toObject(),
+        calculation_data: calc || null
+      };
+    });
+    res.status(200).json({ message: 'success', data: enrichedLeads });
+  } catch (err) {
+    res.status(500).json({ message: 'Error', error: err.message });
+  }
+};
+
+exports.getAllCancelledItinery = async (req, res) => {
+  try {
+    const leads = await Lead.find({ itenary_status: 'N' })
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .populate('qc_done_by', 'first_name');
+
+    const leadIds = leads.map(lead => lead._id);
+
+    const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
+
+    // Match calculation to each lead
+    const enrichedLeads = leads.map(lead => {
+      const calc = calculations.find(c => c.doc_id.toString() === lead._id.toString());
+      return {
+        ...lead.toObject(),
+        calculation_data: calc || null
+      };
+    });
+
+    res.status(200).json({ message: 'success', data: enrichedLeads });
+  } catch (err) {
+    res.status(500).json({ message: 'Error', error: err.message });
+  }
+};
+
+exports.doCancelledStatus = async (req, res) => {
+  const { id } = req.params;
+  const { userId } = req.body;
+
+  if (!userId) {
+    return res.status(400).json({ message: 'User ID is required for cancellation' });
+  }
+
+  try {
+    const updated = await Lead.findByIdAndUpdate(
+      id,
+      {
+        itenary_status: 'N',
+        cancelled_by: userId,
+        cancelled_date: new Date(),
+      },
+      { new: true }
+    );
+
+    if (!updated) {
+      return res.status(404).json({ message: 'Lead not found' });
+    }
+
+    res.status(200).json({ message: 'Itinerary cancelled successfully', data: updated });
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error cancelling itinerary',
+      error: err.message,
+    });
+  }
+};
+
+
+
+exports.leadwiseReviews = async (req, res) => {
+  try {
+    const leads = await Lead.find({ itenary_status: 'C' })
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .populate('qc_done_by', 'first_name');
+
+    // Get list of lead IDs
+    const leadIds = leads.map(lead => lead._id);
+
+    // Get review counts per lead
+    const reviews = await Google.aggregate([
+      {
+        $match: {
+          doc_id: { $in: leadIds }
+        }
+      },
+      {
+        $group: {
+          _id: '$doc_id',
+          total: { $sum: 1 },
+          approved: {
+            $sum: { $cond: [{ $eq: ['$status', 'A'] }, 1, 0] }
+          },
+          rejected: {
+            $sum: { $cond: [{ $eq: ['$status', 'R'] }, 1, 0] }
+          }
+        }
+      }
+    ]);
+
+    // Convert to map for fast lookup
+    const reviewCountMap = {};
+    reviews.forEach(r => {
+      reviewCountMap[r._id.toString()] = {
+        total: r.total,
+        approved: r.approved,
+        rejected: r.rejected
+      };
+    });
+
+    // Attach review count to each lead
+    const leadsWithReviewCount = leads.map(lead => {
+      const counts = reviewCountMap[lead._id.toString()] || { total: 0, approved: 0, rejected: 0 };
+      return {
+        ...lead.toObject(),
+        review_total: counts.total,
+        review_approved: counts.approved,
+        review_rejected: counts.rejected
+      };
+    });
+
+    // ✅ Send response
+    res.status(200).json({
+      message: "Lead data with review counts",
+      data: leadsWithReviewCount
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Error retrieving leads with review count",
+      error: err.message
+    });
+  }
+};
+
+
+// PATCH /lead/gift-voucher/:id
+exports.giveGiftVoucher = async (req, res) => {
+  try {
+    const leadId = req.params.id;
+    const { userId, gift_vocher_given } = req.body;
+    const today = new Date();
+     const giftDate = new Date(today.setMonth(today.getMonth() + 1));
+    const updated = await Lead.findByIdAndUpdate(
+      leadId,
+      {
+        gift_vocher_given: gift_vocher_given,
+        gift_vocher_given_date: giftDate,
+        gift_vocher_given_by: userId,
+      },
+      { new: true }
+    );
+
+    res.json({ success: true, data: updated });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Failed to update gift voucher info' });
+  }
+};
+
+
+// Assuming you have imported Lead model properly above
+
+exports.getGiftVochers = async (req, res) => {
+  try {
+    const vouchers = await Lead.find({
+      itenary_status: 'C',
+      gift_vocher_given: 'Y'
+    }).populate('holiday_destination'); // Optional: to show destination name
+
+    res.status(200).json({ success: true, data: vouchers });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Failed to fetch gift voucher info' });
+  }
+};
+
+
+
+exports.getLeadsCommentsDetails = async (req, res) => {
+  try {
+    const { year, executiveId } = req.params;
+    const yearInt = parseInt(year);
+
+    const startDate = new Date(`${year}-01-01T00:00:00.000Z`);
+    const endDate = new Date(`${yearInt + 1}-01-01T00:00:00.000Z`);
+
+    // Get leads for this executive and year
+    const leads = await Lead.find({
+      createdAt: { $gte: startDate, $lt: endDate },
+      operation_executive: executiveId
+    })
+      .populate('holiday_destination', 'destination_name')
+      .populate('operation_executive', 'first_name')
+      .lean();
+
+    // Get the team to get the team lead
+    const team = await Team.findOne({
+      team_employees: executiveId
+    }).populate('dept_lead', 'first_name last_name');
+
+    const teamLeadName = team?.dept_lead
+      ? `${team.dept_lead.first_name} ${team.dept_lead.last_name || ''}`.trim()
+      : null;
+
+    // Attach all comments per lead
+    const leadsWithComments = await Promise.all(
+      leads.map(async (leads) => {
+        const comments = await Comment.find({ lead_id: leads._id })
+          .sort({ createdAt: -1 }) // Optional: newest comment first
+          .lean();
+
+        return {
+          ...leads,
+          team_lead_name: teamLeadName,
+          comments
+        };
+      })
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Leads with team lead and comments fetched',
+      data: leadsWithComments
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to fetch data',
+      error: err.message
+    });
+  }
+};
+
+

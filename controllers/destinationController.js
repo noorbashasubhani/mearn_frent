@@ -93,3 +93,34 @@ exports.updateDestination = async (req, res) => {
         res.status(500).json({ message: "Unable to update data", error: error.message });
     }
 };
+
+
+
+exports.getDomesticDetsinations=async(req,res)=>{
+         try{
+            const datas=await Destination.find({destination:'Domestic'});
+            res.status(200).json({ message: "Updated Data fetcing", data: datas });
+         }catch(err){
+           res.status(500).json({ message: "something went wroong in query", error: error.message });
+         }
+}
+
+
+exports.getCruiseDestinations=async(req,res)=>{
+         try{
+            const datas=await Destination.find({destination:'Domestic'});
+            res.status(200).json({ message: "Updated Data fetcing", data: datas });
+         }catch(err){
+           res.status(500).json({ message: "something went wroong in query", error: error.message });
+         }
+}
+
+
+exports.getCities=async(req,res)=>{
+    try{
+    const datas=await Destination.find({is_city:'Yes'});
+    res.status(200).json({ message: "Updated Data fetcing", data: datas });
+    }catch(err){
+    res.status(500).json({ message: "something went wroong in query", error: error.message });
+    }
+}

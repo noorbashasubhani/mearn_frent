@@ -52,6 +52,7 @@ const userSchema = mongoose.Schema({
     branch_name:{type:String},
     bank_ac_number:{type:String},
     ifc_no:{type:String},
+    code:{type:String},
     ref_no_one:{type:String},
     ref_no_two:{type:String},
     ref_mobile_one:{type:String},
@@ -62,6 +63,8 @@ const userSchema = mongoose.Schema({
     employee_id: {type:String},
     password_visible:{type:String},
     partner_type:{type:String},
+    destination_type:{type:String},
+    in_house_no:{type:String},
     requested_date: { type: Date, default: Date.now }
 },{
     timestamps:true
