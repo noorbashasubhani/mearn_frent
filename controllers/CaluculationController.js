@@ -114,3 +114,46 @@ exports.createOrUpdateCal = async (req, res) => {
     return res.status(500).json({ message: 'Error', error: err.message });
   }
 };
+
+
+exports.updateStausApprove = async (req, res) => {
+  try {
+    const {
+      doc_id,
+      sup_status,
+      sup_approved_by,
+      sales_status,
+      partner_approved_by,
+      lead_status,
+      lead_approved_by
+    } = req.body;
+
+    const updateData = {};
+
+    if (sup_status) {
+      updateData.sup_status = sup_status;
+      updateData.sup_approved_by = sup_approved_by;
+    }
+
+    if (sales_status) {
+      updateData.sales_status = sales_status;
+      updateData.partner_approved_by = partner_approved_by;
+    }
+
+    if (lead_status) {
+      updateData.lead_status = lead_status;
+      updateData.lead_approved_by = lead_approved_by;
+    }
+
+    const updated = await Calculation.findOneAndUpdate(
+      { doc_id },        // 🔁 Match by doc_id
+      { $set: updateData, doc_id }, // ensure doc_id is included in insert
+      { new: true, upsert: true }   // ✅ upsert: create if not exists
+    );
+
+    res.json({ message: 'Calculation approved/created successfully', data: updated });
+  } catch (err) {
+    console.error('Approval update failed:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

@@ -939,6 +939,7 @@ exports.getAllCofirmedItinery = async (req, res) => {
     const leads = await Lead.find({ itenary_status: 'C' })
       .populate('operation_executive', 'first_name last_name')
       .populate('holiday_destination', 'destination_name')
+      .populate('supportManager', 'first_name')
       .populate('qc_done_by', 'first_name');
     const leadIds = leads.map(lead => lead._id);
     const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
@@ -1124,8 +1125,6 @@ exports.getGiftVochers = async (req, res) => {
   }
 };
 
-
-
 exports.getLeadsCommentsDetails = async (req, res) => {
   try {
     const { year, executiveId } = req.params;
@@ -1182,4 +1181,170 @@ exports.getLeadsCommentsDetails = async (req, res) => {
   }
 };
 
+
+exports.updatePay=async(req,res)=>{
+ try {
+    const { _id, ...updateFields } = req.body;
+
+    if (!_id) {
+      return res.status(400).json({ message: "_id is required" });
+    }
+
+    // Find the document and update
+    const updatedDoc = await Lead.findByIdAndUpdate(
+      _id,
+      { $set: updateFields },
+      { new: true } // returns the updated document
+    );
+
+    if (!updatedDoc) {
+      return res.status(404).json({ message: "Document not found" });
+    }
+
+    res.json({ message: "Update successful", data: updatedDoc });
+  } catch (err) {
+    console.error("Error updating lead payment:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+}
+
+
+
+exports.getConfirmedReserved = async (req, res) => {
+  try {
+    const leads = await Lead.find({ itenary_status: 'C' , holiday_type: 'Domestic' })
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .populate('qc_done_by', 'first_name');
+
+    const leadIds = leads.map(lead => lead._id);
+
+    const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
+    const tcsData = await Tcs.find({ doc_id: { $in: leadIds } });
+
+    const enrichedLeads = leads.map(lead => {
+      const calc = calculations.find(c => c.doc_id.toString() === lead._id.toString());
+      const tcs = tcsData.find(t => t.doc_id.toString() === lead._id.toString());
+
+      return {
+        ...lead.toObject(),
+        calculation_data: calc || null,
+        tcs_data: tcs || null, // ✅ attach tcs info here
+      };
+    });
+
+    res.status(200).json({ message: 'success', data: enrichedLeads });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error', error: err.message });
+  }
+};
+
+exports.getConfirmedReservedInt = async (req, res) => {
+  try {
+    const leads = await Lead.find({ itenary_status: 'C' , holiday_type: 'International' })
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .populate('qc_done_by', 'first_name');
+
+    const leadIds = leads.map(lead => lead._id);
+
+    const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
+    const tcsData = await Tcs.find({ doc_id: { $in: leadIds } });
+
+    const enrichedLeads = leads.map(lead => {
+      const calc = calculations.find(c => c.doc_id.toString() === lead._id.toString());
+      const tcs = tcsData.find(t => t.doc_id.toString() === lead._id.toString());
+
+      return {
+        ...lead.toObject(),
+        calculation_data: calc || null,
+        tcs_data: tcs || null, // ✅ attach tcs info here
+      };
+    });
+
+    res.status(200).json({ message: 'success', data: enrichedLeads });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error', error: err.message });
+  }
+};
+
+
+exports.fetcheachEmployeeLandcost = async (req, res) => {
+  try {
+    const list = await Lead.aggregate([
+      // 1) Match only completed domestic leads
+      { 
+        $match: { itenary_status: 'C', holiday_type: 'Domestic' } 
+      },
+
+      // 2) Lookup calculation data
+      {
+        $lookup: {
+          from: Caluculation.collection.name,
+          localField: '_id',
+          foreignField: 'doc_id',
+          as: 'costEntries'
+        }
+      },
+
+      // 3) Unwind cost entries
+      { $unwind: '$costEntries' },
+
+      // 4) Group by operation_executive
+      {
+        $group: {
+          _id: '$operation_executive',
+          totalLandCost: { $sum: '$costEntries.goods_tax_amount_after_land' },
+          totalGogagaProfit: {
+            $sum: {
+              $add: [
+                { $ifNull: ['$costEntries.loading_amount_on_land', 0] },
+                { $ifNull: ['$costEntries.loading_on_vruise_val', 0] }
+              ]
+            }
+          }
+        }
+      },
+
+      // 5) Lookup user name from Users collection
+      {
+        $lookup: {
+          from: 'users', // Make sure the collection name matches your actual MongoDB collection name
+          localField: '_id',
+          foreignField: '_id',
+          as: 'executiveInfo'
+        }
+      },
+
+      // 6) Flatten the executive info
+      { $unwind: { path: '$executiveInfo', preserveNullAndEmptyArrays: true } },
+
+      // 7) Project desired fields
+      {
+        $project: {
+          executiveId: '$_id',
+          executiveName: {
+            $concat: [
+              { $ifNull: ['$executiveInfo.first_name', ''] },
+              ' ',
+              { $ifNull: ['$executiveInfo.last_name', ''] }
+            ]
+          },
+          totalLandCost: 1,
+          totalGogagaProfit: 1
+        }
+      },
+
+      // 8) Sort by total land cost
+      { $sort: { totalLandCost: -1 } }
+    ]);
+
+    return res.status(200).json({ message: 'success', data: list });
+  } catch (err) {
+    console.error('Error fetching land cost and profit by executive:', err);
+    return res.status(500).json({ message: 'Error', error: err.message });
+  }
+};
 

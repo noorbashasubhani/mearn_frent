@@ -611,3 +611,48 @@ exports.approveIncentive = async (req, res) => {
     res.status(500).json({ success: false, message: 'Server error' });
   }
 };
+
+
+exports.registerPartner = async (req, res) => {
+  try {
+    const {
+      first_name, last_name, email, password,
+      gender, date_of_birthday, mobile_no,
+      pan_number, bank_name, branch_name, bank_ac_number, ifsc_no,
+      ref_no_one, ref_no_two, ref_mobile_one, ref_mobile_two, partner_type,user_type,status
+    } = req.body;
+
+    // Email duplication check
+    const existingPartner = await User.findOne({ email });
+    if (existingPartner) {
+      return res.status(400).json({ message: 'Email already registered' });
+    }
+
+    // Hash password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const newPartner = new User({
+      first_name, last_name, email,
+      password: hashedPassword,
+      gender, date_of_birthday, mobile_no,
+      pan_number, bank_name, branch_name, bank_ac_number, ifsc_no,
+      ref_no_one, ref_no_two, ref_mobile_one, ref_mobile_two, partner_type,user_type:'P',status:'P'
+    });
+
+    await newPartner.save();
+
+    res.status(201).json({ message: 'Partner registered successfully', partner_id: newPartner._id });
+  } catch (error) {
+    console.error('Error in registerPartner:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.fetchPartners=async(req,res)=>{
+   try{
+    const getData=await User.find({status:'P',user_type:'P'});
+ res.status(200).json({ message: 'Partner registered successfully', data: getData });
+   }catch(err){
+ res.status(500).json({ message: 'Server error' });
+   }
+}

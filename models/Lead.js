@@ -5,6 +5,21 @@ const leadSchema = new mongoose.Schema(
     customer_name: {
       type: String
     },
+
+    bookingstatus:{type:String},
+    booking_entry_date: String,
+    voucher_permission: String,
+    payout_status: String,
+    payment_completed: String,
+    gst_amount: Number,
+    handled_by: {
+    _id: mongoose.Schema.Types.ObjectId,
+    first_name: String
+    },
+    supportManager: {
+    _id: mongoose.Schema.Types.ObjectId,
+    first_name: String
+     },
     customer_number: {
       type: String
     },

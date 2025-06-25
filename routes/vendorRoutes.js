@@ -57,9 +57,11 @@ const formIncExcController=require('../controllers/formIncExcController');
 const DomesticHotel=require('../controllers/DomesticHotelController.js');
 const Google=require('../controllers/GoogleController.js');
 const Attendance=require('../controllers/AttendanceController.js');
-
+const Reimbursement=require('../controllers/Remb');
 const ledgerController = require('../controllers/ledgerController');
-
+const controller = require('../controllers/deductionController');
+const DailySales=require('../controllers/dailySalesController.js');
+const receipt=require('../controllers/receiptController.js');
 
 
 const authenticateToken = require("../middlewares/authenticateToken");
@@ -136,7 +138,8 @@ router.get('/payroll/:month', Users.getPayrollData);
 router.post('/Addincentive/:id', Users.addInsentives);
 router.get('/GetInsentive/:month_year', Users.getInsentive);
 router.put('/ParrollApprove/:id', Users.approveIncentive);
-
+router.post('/partner-register', Users.registerPartner);
+router.get('/Partnerlist', Users.fetchPartners);
 
 
 
@@ -262,6 +265,9 @@ router.post("/Credit-Domestic-Note",authenticateToken,Dcreditnote.AddDomesticCre
 router.get("/Credit-Domestic-Note",Dcreditnote.getDomesticCredits);
 //router.delete("/Credit-Domestic-Note",Dcreditnote.deleteDestination);
 router.delete("/Credit-Domestic-Note/:row_id",Dcreditnote.deleteDomCredits);
+router.post("/CreditsAdd",Dcreditnote.addDomestiCredits);
+router.get("/Domesti-Credit-list",Dcreditnote.getCredits);
+router.put('/CreditsUpdate/:id', Dcreditnote.updateDomesticCredit);
 
 
 // Teams details
@@ -350,6 +356,10 @@ router.put('/cancel-itinerary/:id', lead.doCancelledStatus);
 router.put('/gift-voucher/:id', lead.giveGiftVoucher);
 router.get('/GIFT-LIST', lead.getGiftVochers);
 router.get('/comentleads-comments/:year/:executiveId', lead.getLeadsCommentsDetails);
+router.put('/leadPayment', lead.updatePay);
+router.get('/ReservePaydata', lead.getConfirmedReserved);
+router.get('/ReservePaydataInternational', lead.getConfirmedReservedInt);
+router.get('/Revenus', lead.fetcheachEmployeeLandcost);
 
 
 
@@ -481,6 +491,7 @@ router.get("/Cal",Caluculation.getCal);
 router.get("/Calsingle/:doc_id",Caluculation.getCalSingle);
 router.put("/Calup/:doc_id",Caluculation.updateCal);
 router.post('/CalSave/:id', Caluculation.createOrUpdateCal);
+router.put('/calApprove', Caluculation.updateStausApprove);
 
 
 // Message details here
@@ -547,6 +558,31 @@ router.get('/ledger', ledgerController.getAllLedgers);
 router.get('/ledger/:id', ledgerController.getLedgerById);
 router.put('/ledger/:id', ledgerController.updateLedger);
 router.delete('/ledger/:id', ledgerController.deleteLedger);
+
+// Rebmsment 
+router.post('/Reimbursements',Reimbursement.addRes);
+router.get('/Reimbursements',Reimbursement.getAllRes);
+router.put('/Reimbursements/:id',Reimbursement.upDate);
+
+
+// Deductions 
+router.get('/Deductions', controller.listDeductions);
+router.post('/Deductions', controller.createDeduction);
+
+
+// Daily sales controller
+router.post('/add', DailySales.addDailySales);
+router.get('/all', DailySales.getDailySales);
+router.put('/update/:id', DailySales.updateDailySales);
+router.delete('/delete/:id', DailySales.deleteDailySales);
+
+
+// Receipts 
+router.post('/receipts', receipt.createReceipt);
+router.get('/receipts', receipt.getAllReceipts);
+router.get('/receipts/:id', receipt.getReceiptById);
+router.put('/receipts/:id', receipt.updateReceipt);
+router.delete('/receipts/:id', receipt.deleteReceipt);
 
 
 
