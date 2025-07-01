@@ -67,7 +67,7 @@ const calculationSchema = new mongoose.Schema({
   sales_status: String,
   lead_status: String,
 
-  sup_approved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+ sup_approved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
  partner_approved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
  lead_approved_by: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 
@@ -77,6 +77,7 @@ const calculationSchema = new mongoose.Schema({
     enum: ['yes', 'no'],
     default: 'no'
   },
+  cal_status:{type:String},
 
   doc_id: { type: mongoose.Schema.Types.ObjectId, ref: 'Lead' }
 }, { timestamps: true });

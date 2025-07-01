@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Lead = require('../models/Lead');
 const Team = require('../models/Team');
 const User = require('../models/User'); // Ensure the User model is required if needed
+const moment = require('moment');
 
 //const mongoose = require('mongoose');
 const Flight = require('../models/Flight');
@@ -25,7 +26,7 @@ const Caluculation=require('../models/Caluculation');
 const FormPackDetail=require('../models/FormPackDetail');
 const Google=require('../models/Google.js');
 const Comment=require('../models/Comment.js');
-
+const Ledger=require('../models/Ledger.js');
 
 
 
@@ -910,11 +911,14 @@ exports.duplicateDoc = async (req, res) => {
 
 
 
+
+
 exports.doConfirmStatus = async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req.body; // 👈 You'll pass this from frontend
+  const { id } = req.params;         // lead _id
+  const { userId } = req.body;       // user who confirmed
 
   try {
+    // Step 1: Update Lead
     const updated = await Lead.findByIdAndUpdate(
       id,
       {
@@ -925,13 +929,37 @@ exports.doConfirmStatus = async (req, res) => {
       { new: true }
     );
 
-    if (!updated) return res.status(404).json({ message: 'Document not found' });
+    if (!updated) {
+      return res.status(404).json({ message: 'Lead not found' });
+    }
 
-    res.status(200).json({ message: 'Confirmed successfully', data: updated });
+    // Step 2: Update or Insert into Calculation
+    await Caluculation.findOneAndUpdate(
+      { doc_id: id },                      // match by doc_id
+      {
+        $set: {
+          doc_id: id,
+          cal_status: 'C',
+        }
+      },
+      {
+        upsert: true,                      // insert if doesn't exist
+        new: true,
+        setDefaultsOnInsert: true
+      }
+    );
+
+    res.status(200).json({
+      message: 'Confirmed successfully and calculation updated/created',
+      data: updated
+    });
+
   } catch (err) {
-    res.status(500).json({ message: 'Error confirming itinerary', error: err.message });
+    console.error('Error confirming itinerary:', err);
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
+
 
 
 exports.getAllCofirmedItinery = async (req, res) => {
@@ -1347,4 +1375,407 @@ exports.fetcheachEmployeeLandcost = async (req, res) => {
     return res.status(500).json({ message: 'Error', error: err.message });
   }
 };
+
+
+exports.getConfirmedReservedreceipt = async (req, res) => {
+  try {
+    const leads = await Lead.find({ itenary_status: 'C' })
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .populate('qc_done_by', 'first_name');
+
+    const leadIds = leads.map(lead => lead._id);
+
+    const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
+    const tcsData = await Tcs.find({ doc_id: { $in: leadIds } });
+
+    const enrichedLeads = leads.map(lead => {
+      const calc = calculations.find(c => c.doc_id.toString() === lead._id.toString());
+      const tcs = tcsData.find(t => t.doc_id.toString() === lead._id.toString());
+
+      // Determine cost field based on holiday_type
+      const costAmount = lead.holiday_type === 'Domestic'
+        ? calc?.goods_tax_amount_after_land || 0
+        : calc?.total_cost_remittance || 0;
+
+      return {
+        ...lead.toObject(),
+        total_amount: costAmount, // ✅ single field regardless of type
+        calculation_data: calc || null,
+        tcs_data: tcs || null,
+      };
+    });
+
+    res.status(200).json({ message: 'success', data: enrichedLeads });
+
+  } catch (err) {
+    res.status(500).json({ message: 'Error', error: err.message });
+  }
+};
+
+
+exports.getProductivity = async (req, res) => {
+  try {
+    const year = parseInt(req.params.year);
+    const month = parseInt(req.params.month);
+
+    if (!year || !month || month < 1 || month > 12) {
+      return res.status(400).json({ error: 'Valid year and month are required' });
+    }
+
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 0, 23, 59, 59);
+
+    // Step 1: Fetch Leads
+    const leads = await Lead.find({
+      confirmed_date: { $gte: startDate, $lte: endDate },
+      itenary_status:'C'
+    })
+      .populate('raised_by', 'first_name last_name')
+      .populate('operation_executive', 'first_name last_name')
+      .populate('holiday_destination', 'destination_name')
+      .sort({ confirmed_date: -1 });
+
+    // Step 2: Fetch Calculations
+    const leadIds = leads.map(lead => lead._id.toString());
+    const calculations = await Caluculation.find({ doc_id: { $in: leadIds } });
+
+    // Step 3: Create a map of calculations by doc_id
+    const calcMap = {};
+    calculations.forEach(calc => {
+      calcMap[calc.doc_id.toString()] = calc;
+    });
+
+    // Step 4: Attach calculations to each lead
+    const combinedLeads = leads.map(lead => ({
+      ...lead.toObject(),
+      calculation: calcMap[lead._id.toString()] || null
+    }));
+
+    // Final response
+    res.status(200).json({
+      message: 'Success',
+      data: combinedLeads
+    });
+
+  } catch (error) {
+    console.error('Error fetching productivity data:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+
+
+exports.getTotalAmountByGhrnWithLead = async (req, res) => {
+  const { ghrn_no } = req.params;
+
+  try {
+    const result = await Lead.aggregate([
+      {
+        $match: { ghrn_no: ghrn_no }
+      },
+      {
+        $lookup: {
+          from: 'ledgers',
+          localField: 'ghrn_no',
+          foreignField: 'ghrn_no',
+          as: 'ledgerEntries'
+        }
+      },
+      {
+        $addFields: {
+          totalAmount: { $sum: '$ledgerEntries.amount' }
+        }
+      },
+      {
+        $lookup: {
+          from: 'destinations',
+          localField: 'holiday_destination',
+          foreignField: '_id',
+          as: 'alldestination'
+        }
+      },
+      {
+        $unwind: {
+          path: '$alldestination',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $project: {
+          ledgerEntries: 0 // exclude detailed ledger rows if not needed
+        }
+      }
+    ]);
+
+    if (!result.length) {
+      return res.status(404).json({ message: 'No lead found for this GHRN number' });
+    }
+
+    res.status(200).json({
+      message: 'Total amount and lead details fetched successfully',
+      data: {
+        totalAmount: result[0].totalAmount || 0,
+        leadDetails: result[0]
+      }
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: 'Error fetching data',
+      error: err.message
+    });
+  }
+};
+
+
+
+
+
+exports.getLeadByGST = async (req, res) => {
+  const { ghrn_no } = req.params;
+
+  try {
+    const result = await Lead.aggregate([
+      {
+        $match: { ghrn_no: ghrn_no }
+      },
+      {
+        $lookup: {
+          from: 'calculations',
+          localField: '_id',
+          foreignField: 'doc_id',
+          as: 'calculation'
+        }
+      },
+      {
+        $lookup: {
+          from: 'ledgers',
+          localField: 'ghrn_no',
+          foreignField: 'ghrn_no',
+          as: 'ledger'
+        }
+      },
+      {
+        $unwind: {
+          path: '$calculation',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $addFields: {
+          total_payment_received: {
+            $sum: '$ledger.amount'
+          }
+        }
+      },
+      {
+        $project: {
+          customer_name: 1,
+          start_date: 1,
+          'calculation.destination_name': 1,
+          'calculation.package_cost_less_gst': 1,
+          'calculation.gst_percent': 1,
+          'calculation.gst_amount': 1,
+          'calculation.total_package_cost_incl_gst': 1,
+          total_payment_received: 1,
+          'calculation.tcs_received': 1
+        }
+      }
+    ]);
+
+    if (!result.length) {
+      return res.status(404).json({ message: 'No data found for this GHRN number' });
+    }
+
+    const lead = result[0];
+    const pending_payment = (lead.calculation?.total_package_cost_incl_gst || 0) - (lead.total_payment_received || 0);
+    const difference_amount = pending_payment - (lead.calculation?.tcs_received || 0);
+
+    const responseData = {
+      customer_name: lead.customer_name || '',
+      destination_name: lead.calculation?.destination_name || '',
+      start_date: lead.start_date,
+      land_package_cost: lead.calculation?.total_package_cost_incl_gst || 0,
+      package_cost_less_gst: lead.calculation?.package_cost_less_gst || 0,
+      gst_percent: lead.calculation?.gst_percent || 0,
+      gst_amount: lead.calculation?.gst_amount || 0,
+      total_package_cost_incl_gst: lead.calculation?.total_package_cost_incl_gst || 0,
+      payment_received: lead.total_payment_received || 0,
+      tcs_received: lead.calculation?.tcs_received || 0,
+      pending_payment: pending_payment.toFixed(2),
+      difference_amount: difference_amount.toFixed(2)
+    };
+
+    res.status(200).json({ message: 'Success', data: responseData });
+  } catch (err) {
+    console.error('Error in getLeadByGST:', err.message);
+    res.status(500).json({ message: 'Server error', error: err.message });
+  }
+};
+
+
+
+exports.getPayableReport = async (req, res) => {
+  try {
+    const report = await Lead.aggregate([
+      {
+        $lookup: {
+          from: 'calculations',
+          localField: '_id',
+          foreignField: 'doc_id',
+          as: 'calculation'
+        }
+      },
+      {
+        $unwind: {
+          path: '$calculation',
+          preserveNullAndEmptyArrays: true
+        }
+      },
+      {
+        $lookup: {
+          from: 'ledgers',
+          localField: 'ghrn_no',
+          foreignField: 'ghrn_no',
+          pipeline: [
+            {
+              $match: {
+                transaction_type: 'Debit'
+              }
+            },
+            {
+              $group: {
+                _id: null,
+                total_debit: { $sum: '$amount' }
+              }
+            }
+          ],
+          as: 'ledger_data'
+        }
+      },
+      {
+        $addFields: {
+          paid_amount: { $ifNull: [{ $arrayElemAt: ['$ledger_data.total_debit', 0] }, 0] },
+          payable_amount: {
+            $add: [
+              { $ifNull: ['$calculation.land_cost', 0] },
+              { $ifNull: ['$calculation.total_flight_cost', 0] },
+              { $ifNull: ['$calculation.sup_charges', 0] },
+              { $ifNull: ['$calculation.visa_cost', 0] },
+              { $ifNull: ['$calculation.bus_charges', 0] },
+              { $ifNull: ['$calculation.train_charges', 0] },
+              { $ifNull: ['$calculation.total_tcs_cost', 0] },
+              { $ifNull: ['$calculation.goods_tax_amount', 0] },
+              { $ifNull: ['$calculation.travel_insurance', 0] },
+              { $ifNull: ['$calculation.cruise_cost', 0] }
+            ]
+          }
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          ghrn_no: 1,
+          customer_name: 1,
+          trip_end_date: '$end_date',
+          holiday_type: 1,
+          payable_amount: 1,
+          paid_amount: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({ message: 'Success', data: report });
+  } catch (err) {
+    console.error('Error generating payable report:', err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
+
+
+exports.getPartnersReport = async (req, res) => {
+  try {
+    const startOfMonth = moment().startOf('month').toDate();
+    const endOfMonth = moment().endOf('month').toDate();
+
+    const calculations = await Calculation.aggregate([
+      {
+        $lookup: {
+          from: 'leads',
+          localField: 'doc_id',
+          foreignField: '_id',
+          as: 'lead'
+        }
+      },
+      { $unwind: '$lead' },
+      {
+        $match: {
+          'lead.itenary_status': 'C'
+        }
+      },
+      {
+        $project: {
+          total_package_cost_quoted: 1,
+          confirmed_date: '$lead.confirmed_date',
+          partners: [
+            '$super_partner_id',
+            '$sales_partner_id',
+            '$lead_partner_id'
+          ]
+        }
+      },
+      { $unwind: '$partners' },
+      {
+        $group: {
+          _id: '$partners',
+          latest_confirmed_date: { $max: '$confirmed_date' },
+          total_business: { $sum: '$total_package_cost_quoted' },
+          monthly_business: {
+            $sum: {
+              $cond: [
+                {
+                  $and: [
+                    { $gte: ['$confirmed_date', startOfMonth] },
+                    { $lte: ['$confirmed_date', endOfMonth] }
+                  ]
+                },
+                '$total_package_cost_quoted',
+                0
+              ]
+            }
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'partner'
+        }
+      },
+      { $unwind: '$partner' },
+      {
+        $project: {
+          partner_id: '$_id',
+          partner_name: '$partner.first_name',
+          user_type: '$partner.user_type',
+          latest_confirmed_date: 1,
+          total_business: 1,
+          monthly_business: 1
+        }
+      }
+    ]);
+
+    res.status(200).json({ message: 'Success', data: calculations });
+  } catch (error) {
+    console.error('Error generating partner report:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 

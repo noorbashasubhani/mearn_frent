@@ -19,8 +19,7 @@ exports.createReceipt = async (req, res) => {
       payment_type,
       total_cost,
       payment_received,
-      pending_payment,
-      added_by: req.user.id  // assuming you're using authentication middleware
+      pending_payment
     });
 
     const savedReceipt = await newReceipt.save();

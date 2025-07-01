@@ -31,6 +31,7 @@ exports.HotelList = async (req,res) => {
    }
 };
 
+
 exports.DeletHotel = async (req,res) => {
     const { id } = req.params;
     try{

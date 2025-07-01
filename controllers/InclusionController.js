@@ -32,6 +32,15 @@ exports.getAll = async(req,res)=>{
     }
 }
 
+exports.getINCexc = async(req,res)=>{
+    try{
+        const list = await Inclusion.find();
+        res.status(200).json({message:"succes",data:list});
+    }catch(error){
+     res.status(500).json({message:"unble get data"});
+    }
+}
+
 exports.getSinglerow = async(req,res)=>{
     const {row_id}=req.params;
     try{

@@ -389,10 +389,11 @@ exports.emailCheck = async (req, res) => {
 };
 
 
+
 exports.partnerList=async(req,res)=>{
   try{
     const list = await User.find({
-      status:  { $ne: "P" }
+      user_type:  'P'
     });
     res.status(200).json({message:"success",data:list});
   }catch(error){

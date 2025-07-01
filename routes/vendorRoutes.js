@@ -62,6 +62,10 @@ const ledgerController = require('../controllers/ledgerController');
 const controller = require('../controllers/deductionController');
 const DailySales=require('../controllers/dailySalesController.js');
 const receipt=require('../controllers/receiptController.js');
+const proformaController = require('../controllers/ProformaController.js');
+const ltaController = require('../controllers/ltaController');
+const gstInvoiceController = require('../controllers/gstInvoiceController');
+
 
 
 const authenticateToken = require("../middlewares/authenticateToken");
@@ -360,6 +364,14 @@ router.put('/leadPayment', lead.updatePay);
 router.get('/ReservePaydata', lead.getConfirmedReserved);
 router.get('/ReservePaydataInternational', lead.getConfirmedReservedInt);
 router.get('/Revenus', lead.fetcheachEmployeeLandcost);
+router.get('/GHRN-LEAD', lead.getConfirmedReservedreceipt);
+router.get('/Productivity/:year/:month', lead.getProductivity);
+router.get('/getLeadReceivedamount/:ghrn_no', lead.getTotalAmountByGhrnWithLead);
+
+router.get('/getLeadByGST/:ghrn_no', lead.getLeadByGST);
+router.get('/payable-report', lead.getPayableReport);
+router.get('/patreop', lead.getPartnersReport);
+
 
 
 
@@ -492,6 +504,10 @@ router.get("/Calsingle/:doc_id",Caluculation.getCalSingle);
 router.put("/Calup/:doc_id",Caluculation.updateCal);
 router.post('/CalSave/:id', Caluculation.createOrUpdateCal);
 router.put('/calApprove', Caluculation.updateStausApprove);
+router.get('/calPAR/:partnerId', Caluculation.getRecentBusiness);
+router.get('/PendigPercentage', Caluculation.getPendingPercentage);
+router.put('/calApproving', Caluculation.approvePartnerStatus);
+
 
 
 // Message details here
@@ -584,6 +600,25 @@ router.get('/receipts/:id', receipt.getReceiptById);
 router.put('/receipts/:id', receipt.updateReceipt);
 router.delete('/receipts/:id', receipt.deleteReceipt);
 
+// Proforma Controller
+router.post('/Proforma', proformaController.createProforma);
+router.get('/Proforma', proformaController.getAllProformas);
+router.get('/Proforma/:id', proformaController.getProformaById);
+router.put('/Proforma/:id', proformaController.updateProforma);
+router.delete('/Proforma/:id', proformaController.deleteProforma);
 
+// LTA data is checking
+router.post('/lta', ltaController.createLTA);
+router.get('/lta', ltaController.getAllLTA);
+router.get('/lta/:id', ltaController.getLTAById);
+router.put('/lta/:id', ltaController.updateLTA);
+router.delete('/lta/:id', ltaController.deleteLTA);
+
+// GST INVOICES
+router.post('/gst-invoice', gstInvoiceController.createGSTInvoice);
+router.get('/gst-invoice', gstInvoiceController.getAllInvoices);
+router.get('/gst-invoice/:id', gstInvoiceController.getInvoiceById);
+router.put('/gst-invoice/:id', gstInvoiceController.updateInvoice);
+router.delete('/gst-invoice/:id', gstInvoiceController.deleteInvoice);
 
 module.exports = router;

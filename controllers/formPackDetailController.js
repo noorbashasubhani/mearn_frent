@@ -1,24 +1,46 @@
 const FormPackDetail = require('../models/FormPackDetail');
 const Leads = require('../models/Lead');
+const Caluculation=require('../models/Caluculation');
 
 // CREATE
 exports.createFormPackDetail = async (req, res) => {
   const { id } = req.params;
 
   try {
+    // 1. Check if related calculation exists and is fully approved
+    const calc = await Caluculation.findOne({ doc_id: id });
+
+    if (!calc) {
+      return res.status(400).json({
+        message: 'Calculation not found for this Lead'
+      });
+    }
+
+    if (calc.sup_status !== 'A' || calc.sales_status !== 'A' || calc.lead_status !== 'A') {
+      return res.status(400).json({
+        message: 'Cannot create form. Calculation must be fully approved by all partners (Super, Sales, Lead).'
+      });
+    }
+
+    // 2. Proceed to create form detail if approved
     const newDetail = new FormPackDetail({
       ...req.body,
-      doc_id: id // assuming you want to associate the form detail with this ID
+      doc_id: id
     });
+
     const savedDetail = await newDetail.save();
-    const leadUpdateResult = await Leads.updateOne(
-      { _id: id },                      // Match the Lead document by _id
-      { $set: { itenary_status: 'Q' } } // Set the new status
+
+    // 3. Update the lead status
+    await Leads.updateOne(
+      { _id: id },
+      { $set: { itenary_status: 'Q' } }
     );
+
     res.status(201).json({
       message: 'Form Pack Detail created successfully',
       data: savedDetail
     });
+
   } catch (error) {
     res.status(500).json({
       message: 'Failed to create detail',

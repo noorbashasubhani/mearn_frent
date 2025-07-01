@@ -34,15 +34,20 @@ exports.getTransportsel=async(req,res)=>{
 }
 
 
-exports.delTransport=async(req,res)=>{
-  const {row_id}=req.params;
-   try{
-    const delData=await Transport.findByIdAndDelete(row_id);
-   res.status(200).json({message:"success",list});
-   }catch(err){
-    res.status(500).json({message:"erorr",err:err});  
-   }
-}
+// DELETE /vendor/Transports/:row_id
+exports.delTransport = async (req, res) => {
+  const { row_id } = req.params;
+
+  try {
+    const deleted = await Transport.findByIdAndDelete(row_id); // row_id is assumed to be the transport's _id
+    if (!deleted) {
+      return res.status(404).json({ message: "Transport record not found" });
+    }
+    res.status(200).json({ message: "success" });
+  } catch (err) {
+    res.status(500).json({ message: "error", err });
+  }
+};
 
 
 exports.updateTrans=async(req,res)=>{
